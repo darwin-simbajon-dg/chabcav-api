@@ -26,7 +26,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        file: ./chabcav-api/Dockerfile 
+        file: ./chabcav-api/chabcav-api/Dockerfile 
         push: true
         tags: ghcr.io/darwin-simbajon-dg/chabcav-api:latest
 
