@@ -45,12 +45,12 @@ jobs:
     - name: Set Railway Token
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: echo "Railway token set"
+      run: echo "Railway token set"
 
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service chabcav-api
+      run: railway up --service chabcav-api
       
 
   
