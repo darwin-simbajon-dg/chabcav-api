@@ -42,13 +42,15 @@ jobs:
       run: |
         curl -sSL https://railway.app/install.sh | sh
 
-    - name: Log in to Railway
+    - name: Set Railway Token
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: railway login --token $RAILWAY_TOKEN
+        run: echo "Railway token set"
 
     - name: Deploy to Railway
-      run: railway up --detach
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service chabcav-api
       
 
   
