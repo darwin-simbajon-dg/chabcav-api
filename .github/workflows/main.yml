@@ -41,7 +41,6 @@ jobs:
     - name: Install Railway CLI
       run: |
         curl -sSL https://railway.app/install.sh | sh
-        echo "::add-path::${HOME}/.railway/bin"
 
     - name: Log in to Railway
       env:
