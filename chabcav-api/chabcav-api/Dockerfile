@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["/chabcav-api/chabcav-api.csproj", "chabcav-api/"]
+COPY ["/chabcav-api/chabcav-api/chabcav-api.csproj", "chabcav-api/"]
 RUN dotnet restore "./chabcav-api/chabcav-api.csproj"
 COPY . .
 WORKDIR "/src/chabcav-api"
