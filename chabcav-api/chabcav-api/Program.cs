@@ -11,8 +11,13 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
- app.UseSwagger();
- app.UseSwaggerUI();
+Console.WriteLine($"Application is running on port: {Environment.GetEnvironmentVariable("PORT")}");
+
+
+app.Urls.Add($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 
 //app.UseHttpsRedirection();
