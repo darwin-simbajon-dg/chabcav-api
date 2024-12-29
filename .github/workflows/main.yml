@@ -18,7 +18,7 @@ jobs:
 
     - name: Build and push Docker image to Heroku
       run: |
-        docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web ./chabcav-api/chabcav-api
+        docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web -f-f Dockerfile.uat ./chabcav-api/chabcav-api
         docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
     - name: Release Docker image to Heroku
