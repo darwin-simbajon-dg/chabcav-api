@@ -30,20 +30,4 @@ jobs:
         push: true
         tags: ghcr.io/darwin-simbajon-dg/chabcav-api:latest
 
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
-
-      - name: Set Railway Token
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: echo "Railway token set"
-
-      - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service chabcav-api
+  
