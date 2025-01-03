@@ -17,7 +17,6 @@ chabcav-api/chabcav-api/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
 chabcav-api/chabcav-api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 chabcav-api/chabcav-api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 chabcav-api/chabcav-api/Controllers/WeatherForecastController.cs
-chabcav-api/chabcav-api/Properties/launchSettings.json
 chabcav-api/chabcav-api/bin/
 chabcav-api/chabcav.infrastructure/obj/chabcav.infrastructure.csproj.nuget.dgspec.json
 chabcav-api/chabcav.infrastructure/obj/chabcav.infrastructure.csproj.nuget.g.props
