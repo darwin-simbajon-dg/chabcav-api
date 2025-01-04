@@ -8,7 +8,7 @@ namespace chabcav_api.Endpoints
     {
         public static WebApplication MapUserEndpoints(this WebApplication app) 
         {
-            app.MapPost("/chabcav-api/user/register", async (RegisterUserCommand command, IMediator mediator) =>
+            app.MapPost("/user/register", async (RegisterUserCommand command, IMediator mediator) =>
             {
                 try
                 {
@@ -20,7 +20,7 @@ namespace chabcav_api.Endpoints
 
                     return Results.BadRequest(new { Error = ex.Message });
                 }
-            });
+            }).WithTags("User");
 
             return app;
         }
