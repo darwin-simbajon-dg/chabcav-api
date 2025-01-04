@@ -1,3 +1,5 @@
+using chabcav.application.Commands.AddConfiguration;
+using chabcav.application.Commands.GetConfiguration;
 using chabcav.application.Commands.RegisterUser;
 using chabcav.domain.Interfaces;
 using chabcav.domain.Services;
@@ -21,6 +23,18 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 
 builder.Services.AddMediatR(typeof(RegisterUserCommand).Assembly);
+builder.Services.AddMediatR(typeof(AddConfigurationCommand).Assembly);
+builder.Services.AddMediatR(typeof(GetConfigurationCommand).Assembly);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Add your frontend origin here
+              .AllowAnyHeader()                  // Allow all headers
+              .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
+    });
+});
 
 if (builder.Environment.IsDevelopment())
 {
@@ -37,6 +51,7 @@ else
 
 builder.Services.AddScoped<IUserStore<IdentityUser>, UserStore>();
 builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore>();
+builder.Services.AddScoped<ICMSRepository, CMSRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
@@ -56,6 +71,7 @@ var app = builder.Build();
 
 Console.WriteLine($"Application is running on port: {Environment.GetEnvironmentVariable("PORT")}");
 
+app.UseCors("AllowFrontend");
 
 app.Urls.Add($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
 
@@ -72,5 +88,6 @@ app.UseSwaggerUI();
 //app.MapGet("/hello", () => "Hello, World!");
 
 app.MapUserEndpoints();
+app.MapCMSEndpoints();
 
 app.Run();
