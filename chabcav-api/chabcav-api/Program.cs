@@ -34,6 +34,13 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()                  // Allow all headers
               .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
     });
+
+    options.AddPolicy("AllRailway", policy =>
+    {
+        policy.WithOrigins("https://chabcav-api-development.up.railway.app") // Add your frontend origin here
+              .AllowAnyHeader()                  // Allow all headers
+              .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
+    });
 });
 
 if (builder.Environment.IsDevelopment())
