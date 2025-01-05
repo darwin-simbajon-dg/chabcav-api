@@ -79,6 +79,8 @@ var app = builder.Build();
 Console.WriteLine($"Application is running on port: {Environment.GetEnvironmentVariable("PORT")}");
 
 app.UseCors("AllowFrontend");
+app.UseCors("AllRailway");
+
 
 app.Urls.Add($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
 
