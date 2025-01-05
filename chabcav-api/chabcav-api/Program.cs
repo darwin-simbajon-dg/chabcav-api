@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy("AllRailway", policy =>
     {
-        policy.WithOrigins("https://chabcav-api-development.up.railway.app") // Add your frontend origin here
+        policy.WithOrigins("https://chabcav-web-development.up.railway.app/") // Add your frontend origin here
               .AllowAnyHeader()                  // Allow all headers
               .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
     });
