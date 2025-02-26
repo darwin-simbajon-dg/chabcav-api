@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chabcav-api", "chabcav-api\chabcav-api.csproj", "{16362071-CF46-4E13-97BD-859068E74358}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chabcav-api", "chabcav-api\chabcav-api.csproj", "{16362071-CF46-4E13-97BD-859068E74358}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{77C1E9D1-7E46-46B2-B84E-CE2179223B17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chabcav.infrastructure", "chabcav.infrastructure\chabcav.infrastructure.csproj", "{9BDC3189-ACAB-4A47-BB95-DD9E038350EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chabcav.application", "chabcav.application\chabcav.application.csproj", "{D58367FD-271E-4065-8EF3-38C9DC0319F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chabcav.domain", "chabcav.domain\chabcav.domain.csproj", "{6CC153AA-9B9F-4FAB-A979-077F9CA9D4A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,18 @@ Global
 		{16362071-CF46-4E13-97BD-859068E74358}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16362071-CF46-4E13-97BD-859068E74358}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16362071-CF46-4E13-97BD-859068E74358}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BDC3189-ACAB-4A47-BB95-DD9E038350EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BDC3189-ACAB-4A47-BB95-DD9E038350EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BDC3189-ACAB-4A47-BB95-DD9E038350EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BDC3189-ACAB-4A47-BB95-DD9E038350EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D58367FD-271E-4065-8EF3-38C9DC0319F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D58367FD-271E-4065-8EF3-38C9DC0319F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D58367FD-271E-4065-8EF3-38C9DC0319F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D58367FD-271E-4065-8EF3-38C9DC0319F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CC153AA-9B9F-4FAB-A979-077F9CA9D4A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CC153AA-9B9F-4FAB-A979-077F9CA9D4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CC153AA-9B9F-4FAB-A979-077F9CA9D4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CC153AA-9B9F-4FAB-A979-077F9CA9D4A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
