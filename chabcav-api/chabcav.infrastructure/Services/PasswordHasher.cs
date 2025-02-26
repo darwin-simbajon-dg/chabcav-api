@@ -12,10 +12,10 @@ public class PasswordHasher : IPasswordHasher
     {
         // Generate a cryptographic random salt
         var salt = new byte[SaltSize];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(salt);
-        }
+        //using (var rng = RandomNumberGenerator.Create())
+        //{
+        //    rng.GetBytes(salt);
+        //}
 
         // Derive the key using PBKDF2
         using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))

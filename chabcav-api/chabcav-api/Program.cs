@@ -60,7 +60,10 @@ builder.Services.AddScoped<IUserStore<IdentityUser>, UserStore>();
 builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore>();
 builder.Services.AddScoped<ICMSRepository, CMSRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 
 
@@ -98,5 +101,6 @@ app.UseSwaggerUI();
 
 app.MapUserEndpoints();
 app.MapCMSEndpoints();
+app.MapProfileEndpoint();
 
 app.Run();
