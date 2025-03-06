@@ -40,7 +40,8 @@ namespace chabcav.application.Commands.Login
             {
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim(ClaimTypes.Sid, user.Id.ToString())
         };
 
             var token = new JwtSecurityToken(

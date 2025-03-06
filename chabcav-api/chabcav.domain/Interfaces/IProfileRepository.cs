@@ -10,6 +10,7 @@ namespace chabcav.domain.Interfaces
     public interface IProfileRepository
     {
         Task<Profile> GetProfileAsync(Guid userId);
-        Task<bool> UpdateProfileAsync(Profile profile);
+        Task<Guid> UpdateProfileAsync(Profile profile);
+        Task<Guid> AddProfileAsync(Profile profile);
     }
 }

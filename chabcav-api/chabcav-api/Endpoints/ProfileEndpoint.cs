@@ -1,4 +1,6 @@
-﻿using chabcav.application.Queries.GetProfile;
+﻿using chabcav.application.Commands.AddProfile;
+using chabcav.application.Commands.UpdateProfile;
+using chabcav.application.Queries.GetProfile;
 using MediatR;
 
 namespace chabcav_api.Endpoints
@@ -21,7 +23,43 @@ namespace chabcav_api.Endpoints
                 }
             }).WithTags("Profile");
 
+           app.MapPatch("/profile/update", async (UpdateProfileCommand command, IMediator mediator) => {
+
+               try
+               {
+                   var profileId = await mediator.Send(command);
+
+                   return Results.Ok(profileId);
+               }
+               catch (Exception ex)
+               {
+
+                   return Results.BadRequest(new {Error = ex.Message});
+               }
+
+           
+           }).WithTags("Profile");
+
+           app.MapPost("/profile/add", async (AddProfileCommand command, IMediator mediator) => {
+
+                try
+                {
+                    var profileId = await mediator.Send(command);
+
+                    return Results.Created($"/profile/{profileId}", profileId);
+                }
+                catch (Exception ex)
+                {
+
+                    return Results.BadRequest(new { Error = ex.Message });
+                }
+
+
+            }).WithTags("Profile");
+
             return app;
         }
+
+        
     }
 }

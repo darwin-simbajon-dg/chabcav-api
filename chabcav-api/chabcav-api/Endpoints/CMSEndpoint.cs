@@ -10,6 +10,7 @@ namespace chabcav_api.Endpoints
         {
             app.MapGet("/cms/configurations", (IMediator mediator) =>
             {
+
                 try
                 {
                     var command = new GetConfigurationCommand();

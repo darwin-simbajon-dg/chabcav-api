@@ -103,7 +103,7 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 var userRole = await _userRoleRepository.GetRoleByUserId(Guid.Parse(user.Id));
 
-                return new User(user.UserName, user.Email, user.PasswordHash, userRole.name);
+                return new User(Guid.Parse(user.Id), user.UserName, user.Email, user.PasswordHash, userRole.name);
             }
             catch (Exception ex)
             {

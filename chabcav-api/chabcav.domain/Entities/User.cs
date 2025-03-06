@@ -32,6 +32,16 @@ namespace chabcav.domain.Entities
             Role = role;
         }
 
+        public User(Guid id, string username, string email, string passwordHash, string role)
+        {
+            Id = id;
+            Username = username;
+            Email = email;
+            PasswordHash = passwordHash;
+            CreatedAt = DateTime.UtcNow;
+            Role = role;
+        }
+
         public User(string username, string email, string passwordHash)
         {
             Id = Guid.NewGuid();
