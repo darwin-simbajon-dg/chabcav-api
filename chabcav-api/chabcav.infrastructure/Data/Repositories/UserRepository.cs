@@ -21,8 +21,8 @@ namespace chabcav.infrastructure.Data.Repositories
         private readonly IDbConnection _dbConnection;
         private readonly IUserRoleRepository _userRoleRepository;
 
-        public UserRepository(UserManager<IdentityUser> userManager, 
-            IPasswordHasher passwordHasher, 
+        public UserRepository(UserManager<IdentityUser> userManager,
+            IPasswordHasher passwordHasher,
             IDbConnection dbConnection,
             IUserRoleRepository userRoleRepository)
         {
@@ -51,7 +51,7 @@ namespace chabcav.infrastructure.Data.Repositories
                 {
                     _userRoleRepository.AddUserToRoleAsync(Guid.Parse(newUser.Id), user.Role);
 
-                    
+
 
                     return new RegistrationResult()
                     {
@@ -69,7 +69,7 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 throw ex;
             }
-           
+
         }
 
         public async Task<User> AuthenticateAsync(string email, string password)
@@ -130,6 +130,30 @@ namespace chabcav.infrastructure.Data.Repositories
                 throw ex;
             }
           ;
+        }
+
+        public async Task<bool> UpdatePassword(Guid userId, string newPassword, string password)
+        {
+            var foundUser = await _userManager.FindByIdAsync(userId.ToString());
+            try
+            {
+                // Hash the new password
+                var hashedPassword = _passwordHasher.HashPassword(newPassword);
+
+                // Define the SQL query to update the password hash
+                const string sql = "UPDATE AspNetUsers SET PasswordHash = @PasswordHash WHERE Id = @Id";
+
+                // Execute the query
+                var rowsAffected = await _dbConnection.ExecuteAsync(sql, new { PasswordHash = hashedPassword, Id = userId });
+
+                // Return true if the update was successful
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                throw;
+            }
         }
     }
 

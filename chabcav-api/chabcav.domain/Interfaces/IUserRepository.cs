@@ -13,6 +13,8 @@ namespace chabcav.domain.Interfaces
         Task<User> GetByEmailAsync(string email);
         Task<RegistrationResult> AddAsync(User user);
 
+        Task<bool> UpdatePassword(Guid userId, string currentPassword, string password);
+
         Task<User> AuthenticateAsync(string email, string password);
     }
 
