@@ -17,6 +17,7 @@ namespace chabcav.domain.Entities
         public string Role { get; set; }
 
 
+
         public User()
         {
             

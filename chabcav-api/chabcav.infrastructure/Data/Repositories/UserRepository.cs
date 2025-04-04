@@ -5,6 +5,7 @@ using chabcav.domain.Services;
 using Dapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,16 +21,22 @@ namespace chabcav.infrastructure.Data.Repositories
         private readonly IPasswordHasher _passwordHasher;
         private readonly IDbConnection _dbConnection;
         private readonly IUserRoleRepository _userRoleRepository;
+        private readonly IProfileRepository _profileRepository;
+        private readonly IAuditRepository _auditRepository;
 
         public UserRepository(UserManager<IdentityUser> userManager, 
             IPasswordHasher passwordHasher, 
             IDbConnection dbConnection,
-            IUserRoleRepository userRoleRepository)
+            IUserRoleRepository userRoleRepository,
+            IProfileRepository profileRepository,
+            IAuditRepository auditRepository)
         {
             _userManager = userManager;
             _passwordHasher = passwordHasher;
             _dbConnection = dbConnection;
             _userRoleRepository = userRoleRepository;
+            _profileRepository = profileRepository;
+            _auditRepository = auditRepository;
         }
 
         public async Task<RegistrationResult> AddAsync(User user)
@@ -51,7 +58,7 @@ namespace chabcav.infrastructure.Data.Repositories
                 {
                     _userRoleRepository.AddUserToRoleAsync(Guid.Parse(newUser.Id), user.Role);
 
-                    
+                    await AddProfile(user);
 
                     return new RegistrationResult()
                     {
@@ -70,6 +77,28 @@ namespace chabcav.infrastructure.Data.Repositories
                 throw ex;
             }
            
+        }
+
+        public async Task AddProfile(User user)
+        {
+            try
+            {
+                var profile = new Profile()
+                {
+                    id = user.Id,
+                    birthdate = DateTime.Now,
+                    email = user.Email,
+                    fullname = user.Username,
+                    location = "Philippines"
+                };
+
+                var result = await _profileRepository.AddProfileAsync(profile);
+            }
+            catch (Exception ex)
+            {
+
+                
+            }
         }
 
         public async Task<User> AuthenticateAsync(string email, string password)
@@ -103,6 +132,15 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 var userRole = await _userRoleRepository.GetRoleByUserId(Guid.Parse(user.Id));
 
+                var activity = new Activity()
+                {
+                    action = "LOGIN",
+                    userid = Guid.Parse(user.Id),
+                    actiondate = DateTime.Now
+                };
+
+                await _auditRepository.LogActivity(activity);
+
                 return new User(Guid.Parse(user.Id), user.UserName, user.Email, user.PasswordHash, userRole.name);
             }
             catch (Exception ex)
@@ -111,6 +149,13 @@ namespace chabcav.infrastructure.Data.Repositories
                 throw ex;
             }
 
+        }
+
+        public async Task<List<User>> GetAllAsync()
+        {
+            var users = await _dbConnection.QueryAsync<User>("SELECT * FROM aspnetUsers");
+            
+            return users.ToList();
         }
 
         public async Task<User> GetByEmailAsync(string email)

@@ -3,7 +3,9 @@ using chabcav.application.Commands.GetConfiguration;
 using chabcav.application.Commands.RegisterUser;
 using chabcav.domain.Interfaces;
 using chabcav.domain.Services;
+using chabcav.infrastructure.Data.Abstractions;
 using chabcav.infrastructure.Data.Repositories;
+using chabcav.infrastructure.Services;
 using chabcav_api.Endpoints;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -64,6 +66,8 @@ builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+builder.Services.AddScoped<IGoogleDriveUploader, GoogleDriveUploader>();
 
 
 
@@ -83,7 +87,7 @@ Console.WriteLine($"Application is running on port: {Environment.GetEnvironmentV
 
 app.UseCors("AllowFrontend");
 app.UseCors("AllRailway");
-
+app.UseStaticFiles();
 
 app.Urls.Add($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
 
@@ -102,5 +106,6 @@ app.UseSwaggerUI();
 app.MapUserEndpoints();
 app.MapCMSEndpoints();
 app.MapProfileEndpoint();
+app.MapDashboardEndpoints();
 
 app.Run();

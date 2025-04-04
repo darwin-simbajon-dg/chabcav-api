@@ -17,5 +17,6 @@ namespace chabcav.domain.Entities
         public string phonenumber { get; set; }
         public string location { get; set; }
         public DateTime birthdate { get; set; }
+        public string imageid { get; set; }
     }
 }

@@ -39,6 +39,7 @@ namespace chabcav.application.Commands.RegisterUser
             var user = new User(request.Username, request.Email, hashedPassword, request.Role);
             var result = await _userRepository.AddAsync(user);
 
+
             // Raise domain event
             //await _mediator.Publish(new UserRegisteredEvent(user.Id, user.Email), cancellationToken);
 

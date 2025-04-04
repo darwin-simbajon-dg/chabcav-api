@@ -41,6 +41,8 @@ namespace chabcav.infrastructure.Data.Repositories
             }
         }
 
+       
+
         public Task<Profile> GetProfileAsync(Guid userId)
         {
             try
@@ -53,22 +55,86 @@ namespace chabcav.infrastructure.Data.Repositories
             {
                 return null;
             }
+
             
+        }
+
+        public async Task<Profile> GetProfileByEmailAsync(string email)
+        {
+            try
+            {
+
+                var profile = _dbConnection.QueryFirstOrDefault<Profile>("SELECT * FROM profiles WHERE email = @Email", new { Email = email });
+                return profile;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        //public Task<bool> UpdateProfileAsync(Profile profile)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public async Task<bool> UpdateProfileImage(Guid userId, string imageId)
+        {
+            try
+            {
+                var affectedRows = await _dbConnection
+                    .ExecuteAsync("UPDATE profiles SET imageid = @ImageId WHERE id = @UserId", new { ImageId = imageId, UserId = userId });
+
+                return affectedRows > 0;
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
         }
 
         public async Task<Guid> UpdateProfileAsync(Profile profile)
         {
+            Guid profileId = Guid.Empty;
+            int affectedRows = 0;
+
             try
             {
-                var addedProfile = await _dbConnection.UpdateAsync<Profile>(profile);
+                var foundProfile = await _dbConnection.GetAsync<Profile>(profile.id);
+
+                if (foundProfile is null)
+                {
+                    affectedRows = await _dbConnection.ExecuteAsync(@"
+                        INSERT INTO profiles (id, information, fullname, email, phonenumber, location, birthdate, imageid)
+                        VALUES (@Id, @Information, @Fullname, @Email, @Phonenumber, @Location, @Birthdate, @Imageid)", profile);
+
+                    return profile.id;
+                }
+
+                _ = await _dbConnection.UpdateAsync<Profile>(profile);
 
                 return profile.id;
+
 
             }
             catch (Exception ex)
             {
 
                 return Guid.Empty;
+            }
+        }
+
+        public Task<IEnumerable<Profile>> GetAllProfilesAsync()
+        {
+            try
+            {
+                return _dbConnection.QueryAsync<Profile>("SELECT * FROM profiles");
+            }
+            catch (Exception)
+            {
+
+                return null;
             }
         }
     }
