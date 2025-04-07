@@ -2,7 +2,7 @@
 using Dapper;
 using Microsoft.AspNetCore.Identity;
 
-public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUser>
+public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUser>, IUserEmailStore<IdentityUser>
 {
     private readonly IDbConnection _dbConnection;
 
@@ -13,7 +13,8 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
 
     public async Task<IdentityResult> CreateAsync(IdentityUser user, CancellationToken cancellationToken)
     {
-        const string sql = "INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, PasswordHash) VALUES (CAST(@Id AS UUID), @UserName, @NormalizedUserName, @Email, @NormalizedEmail, @PasswordHash)";
+        const string sql = "INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, PasswordHash) VALUES (CAST(@Id AS UUID), @UserName, UPPER(@NormalizedUserName), @Email, @NormalizedEmail, @PasswordHash)";
+        user.NormalizedEmail = user.NormalizedEmail.ToUpper();
         await _dbConnection.ExecuteAsync(sql, user);
         return IdentityResult.Success;
     }
@@ -57,7 +58,12 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
 
     public Task SetPasswordHashAsync(IdentityUser user, string passwordHash, CancellationToken cancellationToken)
     {
-        user.PasswordHash = passwordHash;
+        if (string.IsNullOrEmpty(passwordHash))
+        {
+            user.PasswordHash = passwordHash;
+            return Task.CompletedTask;
+        }
+        
         return Task.CompletedTask;
     }
 
@@ -71,4 +77,76 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
     {
         throw new NotImplementedException();
     }
+
+    public async Task<IdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+    {
+        const string sql = "SELECT * FROM AspNetUsers WHERE normalizedemail = @NormalizedEmail";
+        var result = await _dbConnection.QuerySingleOrDefaultAsync<UserDto>(sql, new { NormalizedEmail = normalizedEmail });
+
+        return new IdentityUser
+        {
+            Id = result.Id.ToString(), // Convert UUID to string if necessary
+            UserName = result.UserName,
+            NormalizedUserName = result.NormalizedUserName,
+            Email = result.Email,
+            NormalizedEmail = result.NormalizedEmail,
+            PasswordHash = result.PasswordHash
+        };
+    }
+
+    public Task SetEmailAsync(IdentityUser user, string? email, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<string?> GetEmailAsync(IdentityUser user, CancellationToken cancellationToken)
+    {
+        const string sql = "SELECT email FROM AspNetUsers WHERE email = @NormalizedEmail";
+        return await _dbConnection.QuerySingleOrDefaultAsync<string>(sql, new { NormalizedEmail = user.NormalizedEmail });
+    }
+
+    public Task<bool> GetEmailConfirmedAsync(IdentityUser user, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SetEmailConfirmedAsync(IdentityUser user, bool confirmed, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string?> GetNormalizedEmailAsync(IdentityUser user, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task SetNormalizedEmailAsync(IdentityUser user, string? normalizedEmail, CancellationToken cancellationToken)
+    {
+        // Ensure the cancellation token is respected
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Update the normalized email in the database
+        //const string sql = @"UPDATE AspNetUsers 
+        //                 SET NormalizedEmail = @NormalizedEmail
+        //                 WHERE Id = @Id";
+
+        //await _dbConnection.ExecuteAsync(sql, new
+        //{
+        //    NormalizedEmail = user.Email.ToUpper(),
+        //    Id = user.Id
+        //});
+
+        //// Update the in-memory user object as well
+        //user.NormalizedEmail = normalizedEmail;
+    }
+}
+
+public class UserDto
+{
+    public Guid Id { get; set; } // Matches database type
+    public string UserName { get; set; }
+    public string NormalizedUserName { get; set; }
+    public string Email { get; set; }
+    public string NormalizedEmail { get; set; }
+    public string PasswordHash { get; set; }
 }

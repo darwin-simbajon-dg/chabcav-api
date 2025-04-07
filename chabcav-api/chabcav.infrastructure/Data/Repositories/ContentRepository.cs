@@ -6,9 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using chabcav.application.Interfaces;
+using chabcav.application.Queries.Dictionary;
 using chabcav.domain.Entities;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace chabcav.infrastructure.Data.Repositories
@@ -17,6 +19,7 @@ namespace chabcav.infrastructure.Data.Repositories
     {
         private readonly UserManager<IdentityUser> _userManager;
         public readonly IDbConnection _dbconnection;
+        // Rest of the code remains unchanged
 
         public ContentRepository(UserManager<IdentityUser> userManager, IDbConnection dbConnection)
         {
@@ -39,11 +42,56 @@ namespace chabcav.infrastructure.Data.Repositories
             }
         }
 
+        public async Task<IEnumerable<DictionarySearchResultDto>> SearchDictionaryAsync(string query)
+        {
+            var sql = @"
+            SELECT 
+            id,
+            file_name AS FileName, 
+            uploaded_at AS UploadedAt,
+            ts_headline('english', extracted_text, p    lainto_tsquery('english', @Query)) AS MatchSnippet
+            FROM dictionary_files
+            WHERE to_tsvector('english', extracted_text) @@ plainto_tsquery('english', @Query);
+            ";
+
+            return await _dbconnection.QueryAsync<DictionarySearchResultDto>(sql, new { Query = query });
+        }
+
+        public async Task<UploadDictionaryFile> GetDictionaryFileByIdAsync(int id)
+        {
+            var query = "SELECT * FROM dictionary_files WHERE id = @Id";
+            return await _dbconnection.QueryFirstOrDefaultAsync<UploadDictionaryFile>(query, new { Id = id });
+        }
+
+        public async Task<IEnumerable<UploadDictionaryFile>> GetAllDictionaryFilesAsync()
+        {
+            var query = "SELECT * FROM dictionary_files";
+            return await _dbconnection.QueryAsync<UploadDictionaryFile>(query);
+        }
+
+        public async Task<bool> UploadDictionaryFileAsync(UploadDictionaryFile file)
+        {
+            var sql = @"
+            INSERT INTO dictionary_files (file_name, file_data, extracted_text, uploaded_at)
+            VALUES (@FileName, @FileData, @ExtractedText, @UploadedAt)
+            ";
+
+            var result = await _dbconnection.ExecuteAsync(sql, new
+            {
+                file.FileName,
+                file.FileData,
+                file.ExtractedText, // 👈 this was missing
+                file.UploadedAt
+            });
+
+            return result > 0;
+        }
+
         public async Task<Lesson> GetLessonByIdAsync(Guid lessonId)
         {
-           
-                return await _dbconnection.GetAsync<Lesson>(lessonId);
-       
+
+            return await _dbconnection.GetAsync<Lesson>(lessonId);
+
         }
 
         public async Task<Lesson> GetLessonByIdAsync(Guid lessonid, bool useRawQuery = false)
@@ -51,13 +99,15 @@ namespace chabcav.infrastructure.Data.Repositories
             if (useRawQuery)
             {
                 string query = "SELECT * FROM Lessons WHERE lessonid = @LessonId";
+                //string query = "SELECT * FROM Lessons WHERE lessonid IS NOT NULL";
                 return await _dbconnection.QueryFirstOrDefaultAsync<Lesson>(query, new { LessonId = lessonid });
-            } else if (!useRawQuery)
+            }
+            else if (!useRawQuery)
             {
                 return await _dbconnection.GetAsync<Lesson>(lessonid);
             }
 
-           return await _dbconnection.GetAsync<Lesson>(lessonid);
+            return await _dbconnection.GetAsync<Lesson>(lessonid);
         }
 
         public async Task<Chapter> GetChapterByIdAsync(Guid chapterId)
@@ -77,7 +127,7 @@ namespace chabcav.infrastructure.Data.Repositories
                 return false;
             }
         }
-        
+
         public async Task<bool> UpdateChapterAsync(Chapter chapter)
         {
             try
@@ -91,12 +141,36 @@ namespace chabcav.infrastructure.Data.Repositories
             }
         }
 
-        /*public async Task<Lesson> GetLessonByIdAsync(Guid lessonId)
+        public async Task<List<AllLesson>> GetAllLessonsAsync()
         {
-            return await _dbconnection.GetAsync<Lesson>(lessonId);
-            // string query = "SELECT * FROM Lessons WHERE lessonid = @LessonId";
-            // return await _dbConnection.QueryFirstOrDefaultAsync<Lesson>(query, new { LessonId = lessonId });
-        }*/
+            string query = @"
+        SELECT 
+            l.LessonId, 
+            l.LessonName, 
+            l.LessonContent, 
+            c.ChapterName 
+        FROM Lessons l
+        INNER JOIN Chapters c ON l.ChapterId = c.ChapterId
+        WHERE c.ChapterId IS NOT NULL ORDER BY c.ChapterName ASC;";
 
+            var lessons = await _dbconnection.QueryAsync<AllLesson>(query);
+            return lessons.ToList();
+        }
+
+
+        public async Task<List<AllLesson>> GetLessonsBySelectedChapterAsync(string chapterName)
+        {
+            string query = @"
+        SELECT 
+            l.LessonId, 
+            l.LessonName, 
+            l.LessonContent, 
+            c.ChapterName 
+        FROM Lessons l
+        INNER JOIN Chapters c ON l.ChapterId = c.ChapterId
+        WHERE c.ChapterName = @ChapterName";
+
+            return (await _dbconnection.QueryAsync<AllLesson>(query, new { ChapterName = chapterName })).ToList();
+        }
     }
 }

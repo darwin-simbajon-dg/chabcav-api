@@ -1,4 +1,5 @@
-﻿using chabcav.domain.Entities;
+﻿using chabcav.domain.Aggregates.Models;
+using chabcav.domain.Entities;
 using chabcav.domain.Events;
 using chabcav.domain.Interfaces;
 using chabcav.domain.Services;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace chabcav.application.Commands.RegisterUser
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Guid>
+    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegistrationResult>
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
@@ -24,7 +25,7 @@ namespace chabcav.application.Commands.RegisterUser
             _mediator = mediator;
         }
 
-        public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<RegistrationResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             // Check if email already exists
             var existingUser = await _userRepository.GetByEmailAsync(request.Email);
@@ -35,13 +36,17 @@ namespace chabcav.application.Commands.RegisterUser
             var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
             // Create user
-            var user = new User(request.Username, request.Email, hashedPassword);
-            await _userRepository.AddAsync(user);
+            var user = new User(request.Username, request.Email, hashedPassword, request.Role);
+            var result = await _userRepository.AddAsync(user);
 
             // Raise domain event
             //await _mediator.Publish(new UserRegisteredEvent(user.Id, user.Email), cancellationToken);
 
-            return user.Id;
+            return new RegistrationResult()
+            {
+                IsSuccessful = result.IsSuccessful,
+                Message = result.Message
+            };
         }
     }
 

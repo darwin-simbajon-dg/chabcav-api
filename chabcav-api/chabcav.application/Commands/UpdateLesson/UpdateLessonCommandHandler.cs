@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using chabcav.application.Commands.AddContent;
-using chabcav.application.Interfaces;
 using MediatR;
+using chabcav.application.Interfaces;
 
 namespace chabcav.application.Commands.UpdateLesson
 {
@@ -27,6 +23,7 @@ namespace chabcav.application.Commands.UpdateLesson
 
             await _contentRepository.UpdateLessonAsync(lesson);
             return true; // Update successful
+            //return await _contentRepository.UpdateLessonAsync(request.LessonId, request.LessonName, request.LessonContent);
         }
     }
 }

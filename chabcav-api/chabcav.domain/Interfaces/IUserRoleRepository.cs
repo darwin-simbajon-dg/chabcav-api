@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace chabcav.domain.Interfaces
 {
-    public interface IProfileRepository
+    public interface IUserRoleRepository
     {
-        Task<Profile> GetProfileAsync(Guid userId);
-        Task<bool> UpdateProfileAsync(Profile profile);
+        public Task<UserRole> AddUserToRoleAsync(Guid userId, string roleName);
+        public Task<Role> GetRoleByUserId(Guid userId);
     }
 }

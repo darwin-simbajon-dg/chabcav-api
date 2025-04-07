@@ -40,7 +40,13 @@ namespace chabcav.domain.Entities
         [Column("chaptername")]
         public string chaptername { get; set; }
 
-        public Chapter() { }
+        public Chapter()
+        {
+            if (chapterid == Guid.Empty)
+            {
+                chapterid = Guid.NewGuid();  // Ensure UUID is assigned for new objects
+            }
+        }
 
         public Chapter(string chapterName)
         {
@@ -48,12 +54,14 @@ namespace chabcav.domain.Entities
             chaptername = chapterName;
         }
 
-    
+       
 
         public void UpdateChapter(string chapterName)
         {
             chaptername = chapterName;
         }
+
+     
 
     }
 }
