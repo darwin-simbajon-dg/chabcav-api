@@ -18,7 +18,7 @@ namespace chabcav.application.Commands.UpdatePassword
         }
         public async Task<bool> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
         {
-            var result = await _userRepository.UpdatePassword(request.UserId, request.CurrentPassword, request.NewPassword);
+            var result = await _userRepository.UpdatePassword(request.UserId, request.NewPassword, request.CurrentPassword);
 
             return result;
 

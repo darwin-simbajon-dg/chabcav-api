@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\chabcav.domain\chabcav.domain.csproj" />
+    <ProjectReference Include="..\chabcav.infrastructure\chabcav.infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

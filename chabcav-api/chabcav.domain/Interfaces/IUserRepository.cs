@@ -12,10 +12,12 @@ namespace chabcav.domain.Interfaces
     {
         Task<User> GetByEmailAsync(string email);
         Task<RegistrationResult> AddAsync(User user);
-
         Task<bool> UpdatePassword(Guid userId, string currentPassword, string password);
-
+        Task<bool> ResetPassword(string email, string currentPassword, string newPassword);
         Task<User> AuthenticateAsync(string email, string password);
+        Task<bool> SaveOTP(string emailAddress, string otp);
+
+        Task<bool> VerifyOTP(string emailAddress, string otp);
     }
 
 }

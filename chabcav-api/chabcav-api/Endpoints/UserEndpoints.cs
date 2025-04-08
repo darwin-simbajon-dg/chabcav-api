@@ -1,15 +1,20 @@
 ﻿using chabcav.application.Commands;
+using chabcav.application.Commands.CMS;
+using chabcav.application.Commands.ForgotPassword;
 using chabcav.application.Commands.Login;
 using chabcav.application.Commands.RegisterUser;
+using chabcav.application.Commands.ResetPassword;
+using chabcav.application.Commands.SendOTP;
 using chabcav.application.Commands.UpdatePassword;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace chabcav_api.Endpoints
 {
     public static class UserEndpoints
     {
-        public static WebApplication MapUserEndpoints(this WebApplication app) 
+        public static WebApplication MapUserEndpoints(this WebApplication app)
         {
             app.MapPost("/user/register", async (RegisterUserCommand command, IMediator mediator) =>
             {
@@ -23,7 +28,7 @@ namespace chabcav_api.Endpoints
                     }
 
                     return Results.BadRequest(result.Message);
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -44,7 +49,7 @@ namespace chabcav_api.Endpoints
 
                 return Results.Ok(response);
 
-               
+
 
 
             }).WithTags("User");
@@ -61,12 +66,89 @@ namespace chabcav_api.Endpoints
 
                 return Results.Ok(response);
 
-               
+
 
 
             }).WithTags("User");
 
+            app.MapPost("/user/forgot-password", async (ForgotPasswordCommand command, IMediator mediator) =>
+            {
+
+                var response = await mediator.Send(command);
+
+                if (!response)
+                {
+                    return Results.BadRequest(new { Error = "Update Password Failed" });
+                }
+
+                return Results.Ok(response);
+
+
+
+
+            }).WithTags("User");
+
+            app.MapPost("/user/reset-password", async (ResetPasswordCommand command, IMediator mediator) =>
+            {
+                var response = await mediator.Send(command);
+
+                if (response == "Reset Password Failed")
+                {
+                    return Results.BadRequest(new { Error = "Reset Password Failed" });
+                }
+
+                if (response == "Invalid OTP")
+                {
+                    return Results.BadRequest(new { Error = "Invalid OTP" });
+                }
+
+                return Results.Ok(response);
+            });
+
+
+            app.MapPost("/user/send-otp", async (SendOTPCommand command, IMediator mediator) =>
+            {
+                var response = await mediator.Send(command);
+
+                if (!response)
+                {
+                    return Results.BadRequest(new { Error = "Send OTP Failed" });
+                }
+
+                return Results.Ok(response);
+            });
+
+            //app.MapPost("/user/cms", async (CMSCommand command, IMediator mediator) =>
+            //{
+            //    try
+            //    {
+            //        var response = await mediator.Send(command);
+
+            //        if (string.IsNullOrEmpty(response))
+            //        {
+            //            return Results.BadRequest(new { Error = "CMS Failed" });
+            //        }
+
+            //        return Results.Ok(response);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        return Results.BadRequest(new { Error = ex.Message });
+            //    }
+            //}).WithTags("User");
+
+            
+
+
+
+
+
             return app;
+
+
+
+
+
         }
     }
 }
