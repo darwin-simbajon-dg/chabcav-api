@@ -8,6 +8,10 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using chabcav.domain.Interfaces;
+using chabcav.domain.Entities;
+using System.Data;
+using Dapper.Contrib.Extensions;
 
 namespace chabcav.infrastructure.Data.Repositories
 {
@@ -56,8 +60,10 @@ namespace chabcav.infrastructure.Data.Repositories
                 return null;
             }
 
+                return null;
             
         }
+        
 
         public async Task<Profile> GetProfileByEmailAsync(string email)
         {

@@ -1,6 +1,8 @@
-using chabcav.application.Commands.AddConfiguration;
+﻿using chabcav.application.Commands.AddConfiguration;
 using chabcav.application.Commands.GetConfiguration;
 using chabcav.application.Commands.RegisterUser;
+using chabcav.application.Interfaces;
+using chabcav.application.Services;
 using chabcav.domain.Interfaces;
 using chabcav.domain.Services;
 using chabcav.infrastructure.Data.Abstractions;
@@ -58,22 +60,19 @@ else
 }
 
 
-
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IUserStore<IdentityUser>, UserStore>();
 builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore>();
 builder.Services.AddScoped<ICMSRepository, CMSRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IContentRepository, ContentRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IOTPService, OTPService>();
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
-
-
-
-
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
@@ -115,6 +114,11 @@ app.UseStaticFiles();
 app.MapUserEndpoints();
 app.MapCMSEndpoints();
 app.MapProfileEndpoint();
+app.MapContentEndpoints();
+//app.MapUpdateLessonEndpoints();
+//app.MapUpdateChapterEndpoints();
+//app.MapGetContentEndpoints();
+//app.MapGetAllLessonEndpoints();
 app.MapDashboardEndpoints();
 
 app.Run();
