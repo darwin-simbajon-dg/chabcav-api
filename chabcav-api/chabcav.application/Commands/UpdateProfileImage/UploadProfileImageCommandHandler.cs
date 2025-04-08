@@ -11,12 +11,10 @@ namespace chabcav.application.Commands.UpdateProfileImage
 {
     public class UploadProfileImageCommandHandler : IRequestHandler<UpdateProfileImageCommand, bool>
     {
-        private readonly IGoogleDriveUploader _googleDriveUploader;
         private readonly IProfileRepository _profileRepository;
 
-        public UploadProfileImageCommandHandler(IGoogleDriveUploader googleDrive, IProfileRepository profileRepository)
+        public UploadProfileImageCommandHandler(IProfileRepository profileRepository)
         {
-            _googleDriveUploader = googleDrive;
             _profileRepository = profileRepository;
         }
 
@@ -45,7 +43,6 @@ namespace chabcav.application.Commands.UpdateProfileImage
                 return false;
             }
 
-            return false;
         }
     }
 }

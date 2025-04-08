@@ -8,6 +8,7 @@ using chabcav.infrastructure.Data.Repositories;
 using chabcav.infrastructure.Services;
 using chabcav_api.Endpoints;
 using MediatR;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -66,8 +67,11 @@ builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IOTPService, OTPService>();
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
-builder.Services.AddScoped<IGoogleDriveUploader, GoogleDriveUploader>();
+
+
 
 
 
@@ -78,7 +82,10 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100 MB
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -93,6 +100,8 @@ app.Urls.Add($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseStaticFiles();
+
 
 
 //app.UseHttpsRedirection();

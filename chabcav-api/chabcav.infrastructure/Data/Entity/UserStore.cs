@@ -28,8 +28,31 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
 
     public async Task<IdentityUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
     {
-        const string sql = "SELECT * FROM AspNetUsers WHERE Id = @Id";
-        return await _dbConnection.QuerySingleOrDefaultAsync<IdentityUser>(sql, new { Id = userId });
+        
+
+        try
+        {
+            const string sql = "SELECT * FROM AspNetUsers WHERE CAST(Id AS TEXT) = @Id";
+           var user = await _dbConnection.QueryAsync(sql, new {Id = userId });
+            var user1 = user.FirstOrDefault();
+
+            return new IdentityUser
+            {
+                Id = user1.Id,
+                UserName = user1.UserName,
+                NormalizedUserName = user1.NormalizedUserName,
+                Email = user1.Email,
+                NormalizedEmail = user1.NormalizedEmail
+          
+            };
+
+        }
+        catch (Exception c)
+        {
+
+            throw c;
+        }
+       
     }
 
     public async Task<IdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
@@ -67,7 +90,12 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
         return Task.CompletedTask;
     }
 
-    public Task<string> GetPasswordHashAsync(IdentityUser user, CancellationToken cancellationToken) => Task.FromResult(user.PasswordHash);
+    public Task<string> GetPasswordHashAsync(IdentityUser user, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(string.Empty);
+    }
+
+
 
     public Task<bool> HasPasswordAsync(IdentityUser user, CancellationToken cancellationToken) => Task.FromResult(!string.IsNullOrEmpty(user.PasswordHash));
 
@@ -139,6 +167,8 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
         //// Update the in-memory user object as well
         //user.NormalizedEmail = normalizedEmail;
     }
+
+    
 }
 
 public class UserDto
