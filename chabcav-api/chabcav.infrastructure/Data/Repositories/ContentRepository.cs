@@ -174,24 +174,24 @@ namespace chabcav.infrastructure.Data.Repositories
         }
 
 
-        public async Task AddUserProgressAsync(UserProgress progress)
-        {
-            var query = @"
-        INSERT INTO usersprogress (usersid, usersname, chaptername, status, datecompleted)
-        VALUES (@UsersId, @UsersName, @ChapterName, @Status, @DateCompleted)
-    ";
+    //    public async Task AddUserProgressAsync(UserProgress progress)
+    //    {
+    //        var query = @"
+    //    INSERT INTO usersprogress (usersid, usersname, chaptername, status, datecompleted)
+    //    VALUES (@UsersId, @UsersName, @ChapterName, @Status, @DateCompleted)
+    //";
 
-            var parameters = new
-            {
-                UsersId = progress.UsersId,
-                UsersName = progress.UsersName,
-                ChapterName = progress.ChapterName,
-                Status = progress.Status,
-                DateCompleted = progress.DateCompleted
-            };
+    //        var parameters = new
+    //        {
+    //            UsersId = progress.UsersId,
+    //            UsersName = progress.UsersName,
+    //            ChapterName = progress.ChapterName,
+    //            Status = progress.Status,
+    //            DateCompleted = progress.DateCompleted
+    //        };
 
-            await _dbconnection.ExecuteAsync(query, parameters);
-        }
+    //        await _dbconnection.ExecuteAsync(query, parameters);
+    //    }
 
 
     }

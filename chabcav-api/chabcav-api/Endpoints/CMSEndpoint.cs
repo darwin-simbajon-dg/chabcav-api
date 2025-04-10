@@ -1,6 +1,8 @@
 ﻿using chabcav.application.Commands.AddConfiguration;
 using chabcav.application.Commands.CMS;
 using chabcav.application.Commands.GetConfiguration;
+using chabcav.application.Commands.UpdateCMSContent;
+using chabcav.application.Queries.GetCMS;
 using chabcav.domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +49,33 @@ namespace chabcav_api.Endpoints
             }).WithTags("CMS");
 
 
+            app.MapGet("/api/cms", async (IMediator mediator) =>
+            {
+                try
+                {
+                    var query = new GetCMSQuery();
+                    var cms = await mediator.Send(query);
+                    return Results.Ok(cms);
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { Error = ex.Message });
+                }
+            }).WithTags("CMS");
+
+            app.MapPost("api/cms/update-contents", async ([FromBody] UpdateCMSContentRequest request, IMediator mediator) =>
+            {
+                try
+                {
+                    var command = new UpdateCMSContentCommand(request);
+                    var result = await mediator.Send(command);
+                    return Results.Ok(result);
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { Error = ex.Message });
+                }
+            }).WithTags("CMS");
 
             app.MapPost("/api/cms/upload", async (HttpRequest request, IMediator mediator) =>
             {
@@ -56,9 +85,7 @@ namespace chabcav_api.Endpoints
                     var cms = new CMSDto()
                     {
                         banner = request.Form.Files["banner"]?.FileName,
-                        //headline = request.Form.Files["headline"].FileName,
                         midcontentimage = request.Form.Files["midcontentimage"]?.FileName,
-                        //content = request.Form.Files["content"].FileName,
                         card1 = request.Form.Files["card1"]?.FileName,
                         card2 = request.Form.Files["card2"]?.FileName,
                         card3 = request.Form.Files["card3"]?.FileName,

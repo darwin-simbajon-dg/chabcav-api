@@ -11,6 +11,7 @@ namespace chabcav.domain.Entities
     public class CMS
     {
         [Key]
+        public int id { get; set; }
         public string banner { get; set; }
         public string midcontentimage { get; set; }
         public string headline { get; set; }

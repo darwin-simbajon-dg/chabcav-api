@@ -11,7 +11,7 @@ using chabcav.application.Commands.AddContent.UploadFileDictionary;
 using chabcav.application.Interfaces;
 using chabcav.application.Services;
 using chabcav.application.Queries.Dictionary;
-using chabcav.application.Commands.RegisterUser.UsersProgress;
+//using chabcav.application.Commands.RegisterUser.UsersProgress;
 
 namespace chabcav_api.Endpoints
 {
@@ -191,19 +191,19 @@ namespace chabcav_api.Endpoints
 
 
 
-            app.MapPost("/user/users-progress", async (UsersProgressCommand command, IMediator mediator) =>
-            {
-                try
-                {
-                    var userId = await mediator.Send(command);
-                    return Results.Ok(new { UserId = userId });
-                }
-                catch (Exception ex)
-                {
+            //app.MapPost("/user/users-progress", async (UsersProgressCommand command, IMediator mediator) =>
+            //{
+            //    try
+            //    {
+            //        var userId = await mediator.Send(command);
+            //        return Results.Ok(new { UserId = userId });
+            //    }
+            //    catch (Exception ex)
+            //    {
 
-                    return Results.BadRequest(new { Error = ex.Message });
-                }
-            }).WithTags("User");
+            //        return Results.BadRequest(new { Error = ex.Message });
+            //    }
+            //}).WithTags("User");
 
             return app;
 

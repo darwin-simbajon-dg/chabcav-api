@@ -45,6 +45,21 @@ namespace chabcav.infrastructure.Data.Repositories
             }        
         }
 
+        public async Task<CMS> GetCMS()
+        {
+            try
+            {
+                var result = await _dbConnection.GetAllAsync<CMS>();
+
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
         public Configuration GetConfiguration()
         {
             var configuration =  _dbConnection.GetAll<MainConfiguration>();
@@ -68,7 +83,7 @@ namespace chabcav.infrastructure.Data.Repositories
         {
             try
             {
-                var existingCms = await _dbConnection.QueryFirstOrDefaultAsync<CMS>("SELECT * FROM cms WHERE banner = @Banner", new { cms.banner });
+                var existingCms = await _dbConnection.QueryFirstOrDefaultAsync<CMS>("SELECT * FROM cms");
 
                 if (existingCms == null)
                 {
@@ -95,47 +110,54 @@ namespace chabcav.infrastructure.Data.Repositories
                 }
                 else
                 {
-                    existingCms.banner = cms.banner;
-                    existingCms.midcontentimage = cms.midcontentimage;
-                    existingCms.headline = cms.headline;
-                    existingCms.content = cms.content;
-                    existingCms.card1 = cms.card1;
-                    existingCms.card2 = cms.card2;
-                    existingCms.card3 = cms.card3;
-                    existingCms.card4 = cms.card4;
-                    existingCms.card5 = cms.card5;
-                    existingCms.card6 = cms.card6;
-                    existingCms.card7 = cms.card7;
-                    existingCms.card8 = cms.card8;
-                    //var updateQuery = @"UPDATE cms 
-                    //                    SET midcontentimage = @MidContentImage, 
-                    //                        headline = @Headline, 
-                    //                        content = @Content, 
-                    //                        card1 = @Card1, 
-                    //                        card2 = @Card2, 
-                    //                        card3 = @Card3, 
-                    //                        card4 = @Card4, 
-                    //                        card5 = @Card5, 
-                    //                        card6 = @Card6, 
-                    //                        card7 = @Card7, 
-                    //                        card8 = @Card8 
-                    //                    WHERE banner = @Banner";
+                    if (cms.banner != null) {
+                        existingCms.banner = cms.banner;
+                    }
 
-                    //var updateResult = await _dbConnection.ExecuteAsync(updateQuery, new
-                    //{
-                    //    cms.banner,
-                    //    cms.midcontentimage,
-                    //    cms.headline,
-                    //    cms.content,
-                    //    cms.card1,
-                    //    cms.card2,
-                    //    cms.card3,
-                    //    cms.card4,
-                    //    cms.card5,
-                    //    cms.card6,
-                    //    cms.card7,
-                    //    cms.card8
-                    //});
+                    if (cms.midcontentimage != null)
+                    {
+                        existingCms.midcontentimage = cms.midcontentimage;
+                    }                
+
+                    if (cms.card1 != null)
+                    {
+                        existingCms.card1 = cms.card1;
+                    }
+
+                    if (cms.card2 != null)
+                    {
+                        existingCms.card2 = cms.card2;
+                    }
+
+                    if (cms.card3 != null)
+                    {
+                        existingCms.card3 = cms.card3;
+                    }
+
+                    if (cms.card4 != null)
+                    {
+                        existingCms.card4 = cms.card4;
+                    }
+
+                    if (cms.card5 != null)
+                    {
+                        existingCms.card5 = cms.card5;
+                    }
+
+                    if (cms.card6 != null)
+                    {
+                        existingCms.card6 = cms.card6;
+                    }
+
+                    if (cms.card7 != null)
+                    {
+                        existingCms.card7 = cms.card7;
+                    }
+
+                    if (cms.card8 != null)
+                    {
+                        existingCms.card8 = cms.card8;
+                    }
 
                     //return updateResult > 0;
                     var updateResult = await _dbConnection.UpdateAsync(existingCms);
@@ -144,6 +166,21 @@ namespace chabcav.infrastructure.Data.Repositories
             }
             catch (Exception ex)
             {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateContent(string content, string headline)
+        {
+            try
+            {
+                var result = await _dbConnection.ExecuteAsync("UPDATE cms SET content = @Content, headline = @Headline", new { Content = content, Headline = headline });
+
+                return result > 0;
+            }
+            catch (Exception)
+            {
+
                 return false;
             }
         }

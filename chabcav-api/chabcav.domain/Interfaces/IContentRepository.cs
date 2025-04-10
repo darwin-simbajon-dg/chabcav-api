@@ -37,7 +37,7 @@ namespace chabcav.application.Interfaces
         Task<UploadDictionaryFile> GetDictionaryFileByIdAsync(int id);
         Task<IEnumerable<UploadDictionaryFile>> GetAllDictionaryFilesAsync();
 
-        Task AddUserProgressAsync(UserProgress progress);
+        //Task AddUserProgressAsync(UserProgress progress);
 
     }
 }
