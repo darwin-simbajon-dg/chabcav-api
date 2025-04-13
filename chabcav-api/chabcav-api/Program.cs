@@ -3,12 +3,14 @@ using chabcav.application.Commands.GetConfiguration;
 using chabcav.application.Commands.RegisterUser;
 using chabcav.application.Interfaces;
 using chabcav.application.Services;
+using chabcav.domain.Entities;
 using chabcav.domain.Interfaces;
 using chabcav.domain.Services;
 using chabcav.infrastructure.Data.Abstractions;
 using chabcav.infrastructure.Data.Repositories;
 using chabcav.infrastructure.Services;
 using chabcav_api.Endpoints;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using MediatR;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -48,18 +50,17 @@ builder.Services.AddCors(options =>
     });
 });
 
-if (builder.Environment.IsDevelopment())
+builder.Services.AddTransient<IDbConnection>(connection =>
+new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
+
+builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
 {
-    builder.Services.AddSingleton<IDbConnection>(connection =>
-    new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
-}
-else 
-{
-    builder.Services.AddSingleton<IDbConnection>(connection =>
-    new NpgsqlConnection(connectionString));
-}
+    return () => new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection"));
+});
 
 
+
+//builder.Services.AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IUserStore<IdentityUser>, UserStore>();
 builder.Services.AddScoped<IRoleStore<IdentityRole>, RoleStore>();

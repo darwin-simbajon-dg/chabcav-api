@@ -7,10 +7,10 @@ namespace chabcav_api.Endpoints
     {
         public static WebApplication MapDashboardEndpoints(this WebApplication app)
         {
-            app.MapGet("/dashboard", (IMediator mediator) =>
+            app.MapGet("/dashboard", async (IMediator mediator) =>
             {
                 var query = new GetDashboardQuery();
-                var data = mediator.Send(query);
+                var data = await mediator.Send(query);
 
                 return Results.Ok(data);
             }).WithTags("Dashboard");

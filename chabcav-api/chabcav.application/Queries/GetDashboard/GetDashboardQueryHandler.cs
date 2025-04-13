@@ -31,28 +31,32 @@ namespace chabcav.application.Queries.GetDashboard
             _coordinates = GetCoordinates();
             _countryFlags = GetCountryFlags();
 
+            var countryDataTask = GetCountryData();
+            var weeklyVisitDataTask = GetWeeklyVisit();
+            var monthlyVisitDataTask = GetMonthlyVisit();
+            var monthlyCompletedUsersTask = GetMonthlyCompleted();
+            var noOfVisitsTask = GetTotalVisits();
+            var totalUsersTask = GetTotalUsers();
 
+            await Task.WhenAll(countryDataTask, weeklyVisitDataTask, monthlyVisitDataTask, monthlyCompletedUsersTask, noOfVisitsTask, totalUsersTask);
 
-            //var coordinates = JsonConvert.DeserializeObject<List<Coordinates>>(coordinatesJson);
-            var countryData = GetCountryData();
-
-            var weeklyVisitData =  GetWeeklyVisit().Result;
-            var monthlyVisitData = GetMonthlyVisit().Result;
-            var monthlyCompletedUsers = GetMonthlyCompleted().Result;
-            var noOfVisist = GetTotalVisits();
-            var totalUsers = GetTotalUsers();
+            var countryData = await countryDataTask;
+            var weeklyVisitData = await weeklyVisitDataTask;
+            var monthlyVisitData = await monthlyVisitDataTask;
+            var monthlyCompletedUsers = await monthlyCompletedUsersTask;
+            var noOfVisits = await noOfVisitsTask;
+            var totalUsers = await totalUsersTask;
 
             return new DashboardData
             {
-                CountryData = countryData.Result,
+                CountryData = countryData,
                 NoOfUsersInAWeek = weeklyVisitData,
                 MonthlyVisit = monthlyVisitData,
                 NoOfUsersThatCompletedPerMonth = monthlyCompletedUsers,
-                NoOfVisits = noOfVisist.Result,
-                TotalUsers = totalUsers.Result,
-                MapCoordinates = GetMapCoordinates(countryData.Result, _coordinates)
+                NoOfVisits = noOfVisits,
+                TotalUsers = totalUsers,
+                MapCoordinates = GetMapCoordinates(countryData, _coordinates)
             };
-          
         }
 
         private async Task<List<CountryData>> GetCountryData()

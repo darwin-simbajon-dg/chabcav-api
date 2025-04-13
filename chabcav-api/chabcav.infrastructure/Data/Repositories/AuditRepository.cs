@@ -12,18 +12,23 @@ namespace chabcav.infrastructure.Data.Repositories
 {
     public class AuditRepository : IAuditRepository
     {
-        private readonly IDbConnection _dbConnection;
+        private readonly Func<IDbConnection> _dbConnectionFactory;
 
-        public AuditRepository(IDbConnection dbConnection)
+        public AuditRepository(Func<IDbConnection> dbConnectionFactory)
         {
-            _dbConnection = dbConnection;
+            _dbConnectionFactory = dbConnectionFactory;
         }
 
         public async Task<IEnumerable<Activity>> GetAll()
         {
             try
             {
-                return await _dbConnection.GetAllAsync<Activity>();
+                using (var connection = _dbConnectionFactory())
+                {
+                    return await connection.GetAllAsync<Activity>();
+
+                }
+                   
             }
             catch (Exception ex)
             {
@@ -36,7 +41,10 @@ namespace chabcav.infrastructure.Data.Repositories
         {
             try
             {
-                _ = _dbConnection.Insert<Activity>(activity);
+                using (var connection = _dbConnectionFactory())
+                {
+                    _ = connection.Insert<Activity>(activity);
+                }
 
                 return Task.CompletedTask;
                
