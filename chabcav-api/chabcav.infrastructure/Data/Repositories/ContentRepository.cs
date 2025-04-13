@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using chabcav.application.Interfaces;
 using chabcav.application.Queries.Dictionary;
 using chabcav.domain.Entities;
+using chabcav.infrastructure.Data.Abstractions;
+using chabcav.infrastructure.Data.Repositories;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +23,7 @@ namespace chabcav.infrastructure.Data.Repositories
         public readonly IDbConnection _dbconnection;
         // Rest of the code remains unchanged
 
-        public ContentRepository(UserManager<IdentityUser> userManager, IDbConnection dbConnection)
+        public ContentRepository(UserManager<IdentityUser> userManager, IDbConnection dbConnection) // Modify constructor
         {
             _dbconnection = dbConnection;
             _userManager = userManager;
@@ -42,7 +44,7 @@ namespace chabcav.infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<DictionarySearchResultDto>> SearchDictionaryAsync(string query)
+        /*public async Task<IEnumerable<DictionarySearchResultDto>> SearchDictionaryAsync(string query)
         {
             var sql = @"
             SELECT 
@@ -55,6 +57,24 @@ namespace chabcav.infrastructure.Data.Repositories
             ";
 
             return await _dbconnection.QueryAsync<DictionarySearchResultDto>(sql, new { Query = query });
+        }*/
+
+        public async Task<IEnumerable<DictionarySearchResultDto>> SearchDictionaryAsync(string query)
+        {
+            var sql = @"
+            SELECT 
+                id,
+                file_name AS FileName, 
+                uploaded_at AS UploadedAt,
+                ts_headline('english', extracted_text, plainto_tsquery('english', @Query)) AS MatchSnippet
+            FROM dictionary_files
+            WHERE uploaded_at = (
+                SELECT MAX(uploaded_at) FROM dictionary_files
+            )
+            AND to_tsvector('english', extracted_text) @@ plainto_tsquery('english', @Query);
+            ";
+
+            return await _dbconnection.QueryAsync<DictionarySearchResultDto>(sql, new { Query = query });
         }
 
         public async Task<UploadDictionaryFile> GetDictionaryFileByIdAsync(int id)
@@ -64,27 +84,68 @@ namespace chabcav.infrastructure.Data.Repositories
         }
 
         public async Task<IEnumerable<UploadDictionaryFile>> GetAllDictionaryFilesAsync()
-        {
+         {
             var query = "SELECT * FROM dictionary_files";
-            return await _dbconnection.QueryAsync<UploadDictionaryFile>(query);
-        }
+             return await _dbconnection.QueryAsync<UploadDictionaryFile>(query);
+         }
 
         public async Task<bool> UploadDictionaryFileAsync(UploadDictionaryFile file)
         {
-            var sql = @"
-            INSERT INTO dictionary_files (file_name, file_data, extracted_text, uploaded_at)
-            VALUES (@FileName, @FileData, @ExtractedText, @UploadedAt)
-            ";
+           var sql = @"
+            INSERT INTO dictionary_files (file_name, file_data, extracted_text, extracted_html, uploaded_at)
+            VALUES (@FileName, @FileData, @ExtractedText, @ExtractedHtml, @UploadedAt)";
+
 
             var result = await _dbconnection.ExecuteAsync(sql, new
             {
                 file.FileName,
                 file.FileData,
-                file.ExtractedText, // 👈 this was missing
+                file.ExtractedText,
+                file.ExtractedHtml, /// 👈 this was missing
                 file.UploadedAt
+              // 👈 this was added
             });
 
             return result > 0;
+        }
+
+        public async Task<bool> UpdateDictionaryHtmlAsync(string updatedHtml)
+        {
+            const string sql = @"
+        UPDATE dictionary_files 
+        SET extracted_html = @HtmlContent 
+        WHERE id = (
+            SELECT id 
+            FROM dictionary_files 
+            ORDER BY uploaded_at DESC 
+            LIMIT 1
+        )";
+
+            var result = await _dbconnection.ExecuteAsync(sql, new { HtmlContent = updatedHtml });
+            return result > 0;
+        }
+
+        public async Task<string> GetLatestDictionaryTextAsync()
+        {
+            const string sql = @"
+        SELECT extracted_text
+        FROM dictionary_files 
+        ORDER BY id DESC 
+        LIMIT 1";
+
+            return await _dbconnection.QueryFirstOrDefaultAsync<string>(sql);
+        }
+
+
+        public async Task<string> GetLatestDictionaryHtmlAsync()
+        {
+            const string sql = @"
+        SELECT extracted_html, extracted_text
+        FROM dictionary_files 
+        ORDER BY id DESC 
+        LIMIT 1";
+
+            return await _dbconnection.QueryFirstOrDefaultAsync<string>(sql);
         }
 
         public async Task<Lesson> GetLessonByIdAsync(Guid lessonId)

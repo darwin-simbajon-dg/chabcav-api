@@ -108,18 +108,26 @@ public class UserStore : IUserStore<IdentityUser>, IUserPasswordStore<IdentityUs
 
     public async Task<IdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
     {
-        const string sql = "SELECT * FROM AspNetUsers WHERE normalizedemail = @NormalizedEmail";
-        var result = await _dbConnection.QuerySingleOrDefaultAsync<UserDto>(sql, new { NormalizedEmail = normalizedEmail });
-
-        return new IdentityUser
+        try 
         {
-            Id = result.Id.ToString(), // Convert UUID to string if necessary
-            UserName = result.UserName,
-            NormalizedUserName = result.NormalizedUserName,
-            Email = result.Email,
-            NormalizedEmail = result.NormalizedEmail,
-            PasswordHash = result.PasswordHash
-        };
+            const string sql = "SELECT * FROM AspNetUsers WHERE normalizedemail = @NormalizedEmail";
+            var result = await _dbConnection.QuerySingleOrDefaultAsync<UserDto>(sql, new { NormalizedEmail = normalizedEmail });
+
+            return new IdentityUser
+            {
+                Id = result.Id.ToString(), // Convert UUID to string if necessary
+                UserName = result.UserName,
+                NormalizedUserName = result.NormalizedUserName,
+                Email = result.Email,
+                NormalizedEmail = result.NormalizedEmail,
+                PasswordHash = result.PasswordHash
+            };
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        
     }
 
     public Task SetEmailAsync(IdentityUser user, string? email, CancellationToken cancellationToken)

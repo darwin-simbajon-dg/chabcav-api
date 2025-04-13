@@ -39,5 +39,14 @@ namespace chabcav.application.Interfaces
 
         //Task AddUserProgressAsync(UserProgress progress);
 
+        // ✅ New method to get HTML by file ID
+        //Task<string?> GetDictionaryHtmlByIdAsync(int fileId);
+        Task<string> GetLatestDictionaryHtmlAsync();
+
+        Task<string> GetLatestDictionaryTextAsync();
+
+
+        Task<bool> UpdateDictionaryHtmlAsync(string updatedHtml);
+
     }
 }

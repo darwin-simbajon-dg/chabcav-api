@@ -11,13 +11,14 @@ using chabcav.application.Commands.AddContent.UploadFileDictionary;
 using chabcav.application.Interfaces;
 using chabcav.application.Services;
 using chabcav.application.Queries.Dictionary;
-//using chabcav.application.Commands.RegisterUser.UsersProgress;
+using chabcav.infrastructure.Data.Abstractions;
+using chabcav.application.Commands.UpdateDictionary;
 
 namespace chabcav_api.Endpoints
 {
     public static class ContentEndpoint
     {
-        public static WebApplication MapContentEndpoints(this WebApplication app) 
+        public static WebApplication MapContentEndpoints(this WebApplication app)
         {
             // Add Content Chapters and Lesson
             app.MapPost("/admin/create-content", async (AddContentCommand command, IMediator mediator) =>
@@ -177,6 +178,18 @@ namespace chabcav_api.Endpoints
                 }
             }).WithTags("Dictionary");
 
+            app.MapGet("/api/dictionary", async (IContentRepository repository) =>
+            {
+                try
+                {
+                    var dictionaryFiles = await repository.GetAllDictionaryFilesAsync();
+                    return Results.Ok(dictionaryFiles);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem($"An error occurred: {ex.Message}");
+                }
+            }).WithTags("Dictionary");
 
 
             app.MapGet("/api/dictionary/search", async (string query, IMediator mediator) =>
@@ -185,29 +198,48 @@ namespace chabcav_api.Endpoints
                 return Results.Ok(result);
             }).WithTags("Dictionary");
 
-
-
-
-
-
-
-            //app.MapPost("/user/users-progress", async (UsersProgressCommand command, IMediator mediator) =>
+            //app.MapGet("/api/dictionary/html/{id:int}", async (int id, IContentRepository repo) =>
             //{
-            //    try
-            //    {
-            //        var userId = await mediator.Send(command);
-            //        return Results.Ok(new { UserId = userId });
-            //    }
-            //    catch (Exception ex)
-            //    {
+            //    var html = await repo.GetDictionaryHtmlByIdAsync(id);
+            //    return html != null
+            //        ? Results.Ok(new { Html = html })
+            //        : Results.NotFound(new { Error = "File not found or has no HTML content." });
+            //});
 
-            //        return Results.BadRequest(new { Error = ex.Message });
-            //    }
-            //}).WithTags("User");
+            app.MapGet("/api/dictionary/html/latest", async (IContentRepository repo) =>
+            {
+                var html = await repo.GetLatestDictionaryHtmlAsync();
+                return html != null
+                    ? Results.Ok(new { Html = html })
+                    : Results.NotFound(new { Error = "No uploaded dictionary file found or content is empty." });
+            });
+
+            app.MapGet("/api/dictionary/text/latest", async (IContentRepository repo) =>
+            {
+                var text = await repo.GetLatestDictionaryTextAsync();
+                return text != null
+                    ? Results.Ok(new { Text = text })
+                    : Results.NotFound(new { Error = "No uploaded dictionary file found or content is empty." });
+            });
+
+
+
+            app.MapPost("/admin/update-dictionary-html", async (DictionaryUpdateCommand command, IMediator mediator) =>
+            {
+                try
+                {
+                    var result = await mediator.Send(command);
+                    return result
+                        ? Results.Ok(new { Message = "Dictionary updated successfully." })
+                        : Results.BadRequest(new { Error = "Update failed." });
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(new { Error = ex.Message });
+                }
+            }).WithTags("user");
 
             return app;
-
-
 
         }
     }

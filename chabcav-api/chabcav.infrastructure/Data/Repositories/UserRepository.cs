@@ -49,9 +49,9 @@ namespace chabcav.infrastructure.Data.Repositories
                 var newUser = new IdentityUser
                 {
                     UserName = user.Username,
-                    NormalizedUserName = user.Username,
+                    NormalizedUserName = user.Username.ToUpper(),
                     Email = user.Email,
-                    NormalizedEmail = user.Email,
+                    NormalizedEmail = user.Email.ToUpper(),
                     PasswordHash = user.PasswordHash
                 };
 
@@ -59,19 +59,33 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 if (result.Succeeded)
                 {
-                    _userRoleRepository.AddUserToRoleAsync(Guid.Parse(newUser.Id), user.Role);
+                    // Assign role
+                    await _userRoleRepository.AddUserToRoleAsync(Guid.Parse(newUser.Id), user.Role);
 
+                    // Add profile
                     await AddProfile(user);
+
+                    // Insert into usersprogress table
+                    const string insertProgressSql = @"
+                INSERT INTO usersprogress (usersid, usersname) 
+                VALUES (@UsersId, @UsersName);";
+
+                    await _dbConnection.ExecuteAsync(insertProgressSql, new
+                    {
+                        UsersId = newUser.Id,
+                        UsersName = newUser.UserName
+                    });
 
                     return new RegistrationResult()
                     {
                         IsSuccessful = true
                     };
                 }
+
                 return new RegistrationResult()
                 {
                     IsSuccessful = false,
-                    Message = result.Errors.FirstOrDefault().Description
+                    Message = result.Errors.FirstOrDefault()?.Description
                 };
             }
             catch (Exception ex)
@@ -79,8 +93,48 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 throw ex;
             }
-
         }
+
+
+        /* public async Task<RegistrationResult> AddAsync(User user)
+         {
+             try
+             {
+                 var newUser = new IdentityUser
+                 {
+                     UserName = user.Username,
+                     NormalizedUserName = user.Username,
+                     Email = user.Email,
+                     NormalizedEmail = user.Email,
+                     PasswordHash = user.PasswordHash
+                 };
+
+                 var result = await _userManager.CreateAsync(newUser, user.PasswordHash);
+
+                 if (result.Succeeded)
+                 {
+                     _userRoleRepository.AddUserToRoleAsync(Guid.Parse(newUser.Id), user.Role);
+
+                     await AddProfile(user);
+
+                     return new RegistrationResult()
+                     {
+                         IsSuccessful = true
+                     };
+                 }
+                 return new RegistrationResult()
+                 {
+                     IsSuccessful = false,
+                     Message = result.Errors.FirstOrDefault().Description
+                 };
+             }
+             catch (Exception ex)
+             {
+
+                 throw ex;
+             }
+
+         }*/
 
         public async Task AddProfile(User user)
         {

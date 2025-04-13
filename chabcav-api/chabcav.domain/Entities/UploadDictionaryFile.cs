@@ -13,6 +13,7 @@ namespace chabcav.domain.Entities
         public byte[] FileData { get; set; } = Array.Empty<byte>();
         public string ExtractedText { get; set; } = string.Empty; // ✅ Add this line
         public DateTime UploadedAt { get; set; }
+        public string ExtractedHtml { get; set; } = string.Empty;// 🆕 HTML property
     }
 
 }

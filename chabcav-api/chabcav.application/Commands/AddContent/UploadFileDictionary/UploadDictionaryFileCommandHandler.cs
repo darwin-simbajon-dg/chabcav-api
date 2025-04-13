@@ -24,12 +24,14 @@ public class UploadDictionaryFileCommandHandler : IRequestHandler<UploadDictiona
             return false;
 
         var extractedText = _documentService.ExtractTextFromDocx(request.FileContent);
+        var extractedHtml = _documentService.ExtractHtmlFromDocx(request.FileContent); // Assuming you have a method to convert text to HTML
 
         var fileEntity = new UploadDictionaryFile
         {
             FileName = request.FileName,
             FileData = request.FileContent,
             ExtractedText = extractedText,
+            ExtractedHtml = extractedHtml, // Assuming you have a method to convert text to HTML
             UploadedAt = DateTime.UtcNow
         };
 

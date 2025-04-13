@@ -9,6 +9,8 @@ namespace chabcav.application.Services
     public interface IDocumentService
     {
         string ExtractTextFromDocx(byte[] fileData);
+        string ExtractHtmlFromDocx(byte[] fileData); // ✅ Add this
+        //string ExtractHtmlFromDocx(string extractedText);
     }
 
 
