@@ -35,12 +35,12 @@ builder.Services.AddMediatR(typeof(GetConfigurationCommand).Assembly);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173") // Add your frontend origin here
-              .AllowAnyHeader()                  // Allow all headers
-              .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
-    });
+    //options.AddPolicy("AllowFrontend", policy =>
+    //{
+    //    policy.WithOrigins("http://localhost:5173") // Add your frontend origin here
+    //          .AllowAnyHeader()                  // Allow all headers
+    //          .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
+    //});
 
     options.AddPolicy("AllRailway", policy =>
     {
@@ -100,7 +100,7 @@ var app = builder.Build();
 
 Console.WriteLine($"Application is running on port: {Environment.GetEnvironmentVariable("PORT")}");
 
-app.UseCors("AllowFrontend");
+//app.UseCors("AllowFrontend");
 app.UseCors("AllRailway");
 app.UseStaticFiles();
 
