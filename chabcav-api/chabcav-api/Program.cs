@@ -50,14 +50,22 @@ builder.Services.AddCors(options =>
     });
 });
 
+//builder.Services.AddTransient<IDbConnection>(connection =>
+//new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
+
+//builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
+//{
+//    return () => new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection"));
+//});
+
+
 builder.Services.AddTransient<IDbConnection>(connection =>
-new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
+new NpgsqlConnection(connectionString));
 
 builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
 {
-    return () => new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection"));
+    return () => new NpgsqlConnection(connectionString);
 });
-
 
 
 //builder.Services.AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
