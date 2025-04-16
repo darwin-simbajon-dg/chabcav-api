@@ -48,31 +48,35 @@ namespace chabcav.application.Commands.CMS
                 };
                 
               var result = _cmsRepository.UpdateCMSImages(cms);
-                
+
+                var FirebaseStorage = new FirebaseStorageService();
+                await FirebaseStorage.UploadFilesAsync(request.Files);
+
+                /* foreach (var formFile in request.Files)
+                 {
+                     if (formFile.Length > 0)
+                     {
+                         var filePath = Path.Combine("wwwroot\\uploads", formFile.FileName);
+                         using (var stream = new FileStream(filePath, FileMode.Create))
+                         {
+                             await formFile.CopyToAsync(stream);
+                         }
+                     }
+                 }*/
+
+                //Upload files to Firebase Storage
 
 
-                foreach (var formFile in request.Files)
-                {
-                    if (formFile.Length > 0)
-                    {
-                        var filePath = Path.Combine("wwwroot\\uploads", formFile.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await formFile.CopyToAsync(stream);
-                        }
-                    }
-                }
-                 
-                
+
                 //Create variable for cms record and initialize new Cms
 
                 //var cms = new domain.Entities.CMS
                 //{
                 //    banner = request.CmsImageUploads[0].Name,
-                 
-            
+
+
                 //};
-           
+
 
 
 

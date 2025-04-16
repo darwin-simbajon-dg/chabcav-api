@@ -1,8 +1,10 @@
 ﻿using chabcav.domain.Entities;
 using chabcav.domain.Interfaces;
+using chabcav.infrastructure.Data.Connections;
 using chabcav.infrastructure.Data.Entity;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Google.Cloud.Firestore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +12,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using chabcav.application.Commands.CMS;
 
 namespace chabcav.infrastructure.Data.Repositories
 {
@@ -45,7 +48,7 @@ namespace chabcav.infrastructure.Data.Repositories
             }        
         }
 
-        public async Task<CMS> GetCMS()
+        /*public async Task<CMS> GetCMS()
         {
             try
             {
@@ -58,7 +61,81 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 throw ex;
             }
+        }*/
+
+        public async Task<CMS> GetCMS()
+        {
+            //var db = FirebaseInitializer.Initialize();
+            //DocumentReference docRef = db.Collection("cms").Document("main");
+            //DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+
+           /* if (snapshot.Exists)
+            {
+                var cms = snapshot.ConvertTo<CMS>();
+
+                // Check and assign Firebase Storage URLs if image fields are not null or empty
+                if (!string.IsNullOrEmpty(cms.banner))
+                {
+                    cms.banner = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.banner}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.midcontentimage))
+                {
+                    cms.midcontentimage = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.midcontentimage}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card1))
+                {
+                    cms.card1 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card1}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card2))
+                {
+                    cms.card2 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card2}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card3))
+                {
+                    cms.card3 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card3}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card4))
+                {
+                    cms.card4 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card4}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card5))
+                {
+                    cms.card5 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card5}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card6))
+                {
+                    cms.card6 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card6}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card7))
+                {
+                    cms.card7 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card7}?alt=media";
+                }
+                if (!string.IsNullOrEmpty(cms.card8))
+                {
+                    cms.card8 = $"https://firebasestorage.googleapis.com/v0/b/chabcav-a62d8.appspot.com/o/{cms.card8}?alt=media";
+                }
+
+                return cms;
+            }*/
+
+            return null;
         }
+
+
+        /*public async Task<CMS> GetCMS()
+        {
+            var db = FirebaseInitializer.Initialize();
+            DocumentReference docRef = db.Collection("cms").Document("main");
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                return snapshot.ConvertTo<CMS>();
+            }
+
+            return null;
+        }*/
+
 
         public Configuration GetConfiguration()
         {
@@ -79,7 +156,7 @@ namespace chabcav.infrastructure.Data.Repositories
             return null;
         }
 
-        public async Task<bool> UpdateCMSImages(CMS cms)
+        /*public async Task<bool> UpdateCMSImages(CMS cms)
         {
             try
             {
@@ -168,9 +245,66 @@ namespace chabcav.infrastructure.Data.Repositories
             {
                 return false;
             }
+        }*/
+
+        /* public async Task<bool> UpdateCMSImages(CMS cms)
+         {
+             var db = FirebaseInitializer.Initialize();
+             DocumentReference docRef = db.Collection("cms").Document("main");
+
+             Dictionary<string, object> updates = new();
+
+             if (!string.IsNullOrEmpty(cms.banner)) updates["banner"] = cms.banner;
+             if (!string.IsNullOrEmpty(cms.midcontentimage)) updates["midcontentimage"] = cms.midcontentimage;
+             if (!string.IsNullOrEmpty(cms.card1)) updates["card1"] = cms.card1;
+             if (!string.IsNullOrEmpty(cms.card2)) updates["card2"] = cms.card2;
+             if (!string.IsNullOrEmpty(cms.card3)) updates["card3"] = cms.card3;
+             if (!string.IsNullOrEmpty(cms.card4)) updates["card4"] = cms.card4;
+             if (!string.IsNullOrEmpty(cms.card5)) updates["card5"] = cms.card5;
+             if (!string.IsNullOrEmpty(cms.card6)) updates["card6"] = cms.card6;
+             if (!string.IsNullOrEmpty(cms.card7)) updates["card7"] = cms.card7;
+             if (!string.IsNullOrEmpty(cms.card8)) updates["card8"] = cms.card8;
+
+             await docRef.SetAsync(updates, SetOptions.MergeAll);
+             return true;
+         }*/
+
+        public async Task<bool> UpdateCMSImages(CMS cms)
+        {
+            //var db = FirebaseInitializer.Initialize();
+            //DocumentReference docRef = db.Collection("cms").Document("main");
+
+            //Dictionary<string, object> updates = new();
+
+            // Check if the image fields are not null or empty, and add to the updates dictionary
+         /*   if (!string.IsNullOrEmpty(cms.banner)) updates["banner"] = cms.banner;
+            if (!string.IsNullOrEmpty(cms.midcontentimage)) updates["midcontentimage"] = cms.midcontentimage;
+            if (!string.IsNullOrEmpty(cms.card1)) updates["card1"] = cms.card1;
+            if (!string.IsNullOrEmpty(cms.card2)) updates["card2"] = cms.card2;
+            if (!string.IsNullOrEmpty(cms.card3)) updates["card3"] = cms.card3;
+            if (!string.IsNullOrEmpty(cms.card4)) updates["card4"] = cms.card4;
+            if (!string.IsNullOrEmpty(cms.card5)) updates["card5"] = cms.card5;
+            if (!string.IsNullOrEmpty(cms.card6)) updates["card6"] = cms.card6;
+            if (!string.IsNullOrEmpty(cms.card7)) updates["card7"] = cms.card7;
+            if (!string.IsNullOrEmpty(cms.card8)) updates["card8"] = cms.card8;
+
+            try
+            {
+                // Use UpdateAsync for a partial update (if you're updating specific fields)
+                await docRef.UpdateAsync(updates);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the error (optional)
+                Console.Error.WriteLine($"Failed to update CMS images: {ex.Message}");
+                return false;  // Return false in case of an error
+            }*/
+            return true;
         }
 
-        public async Task<bool> UpdateContent(string content, string headline)
+
+        /*public async Task<bool> UpdateContent(string content, string headline)
         {
             try
             {
@@ -183,6 +317,23 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 return false;
             }
+        }*/
+
+        public async Task<bool> UpdateContent(string content, string headline)
+        {
+            //var db = FirebaseInitializer.Initialize();
+    //       // DocumentReference docRef = db.Collection("cms").Document("main");
+
+    //        var updates = new Dictionary<string, object>
+    //{
+    //    { "content", content },
+    //    { "headline", headline }
+    //};
+
+    //        await docRef.UpdateAsync(updates);
+            return true;
         }
+
+
     }
 }

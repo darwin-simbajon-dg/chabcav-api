@@ -35,12 +35,12 @@ builder.Services.AddMediatR(typeof(GetConfigurationCommand).Assembly);
 
 builder.Services.AddCors(options =>
 {
-    //options.AddPolicy("AllowFrontend", policy =>
-    //{
-    //    policy.WithOrigins("http://localhost:5173") // Add your frontend origin here
-    //          .AllowAnyHeader()                  // Allow all headers
-    //          .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
-    //});
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Add your frontend origin here
+              .AllowAnyHeader()                  // Allow all headers
+             .AllowAnyMethod();                 // Allow all HTTP methods (GET, POST, etc.)
+    });
 
     options.AddPolicy("AllRailway", policy =>
     {
@@ -66,6 +66,17 @@ builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
 {
     return () => new NpgsqlConnection(connectionString);
 });
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<IDbConnection>(connection =>
+    new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
+}
+else
+{
+    builder.Services.AddSingleton<IDbConnection>(connection =>
+    new NpgsqlConnection(connectionString));
+}
 
 
 //builder.Services.AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
@@ -100,7 +111,7 @@ var app = builder.Build();
 
 Console.WriteLine($"Application is running on port: {Environment.GetEnvironmentVariable("PORT")}");
 
-//app.UseCors("AllowFrontend");
+app.UseCors("AllowFrontend");
 app.UseCors("AllRailway");
 app.UseStaticFiles();
 
