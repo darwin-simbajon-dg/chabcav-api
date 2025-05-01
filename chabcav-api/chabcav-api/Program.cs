@@ -50,22 +50,22 @@ builder.Services.AddCors(options =>
     });
 });
 
-//builder.Services.AddTransient<IDbConnection>(connection =>
-//new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
-
-//builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
-//{
-//    return () => new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection"));
-//});
-
-
 builder.Services.AddTransient<IDbConnection>(connection =>
-new NpgsqlConnection(connectionString));
+new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection")));
 
 builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
 {
-    return () => new NpgsqlConnection(connectionString);
+    return () => new NpgsqlConnection(builder.Configuration.GetConnectionString("PostgresConnection"));
 });
+
+
+/*builder.Services.AddTransient<IDbConnection>(connection =>
+new NpgsqlConnection(connectionString));*/
+
+/*builder.Services.AddScoped<System.Func<System.Data.IDbConnection>>(sp =>
+{
+    return () => new NpgsqlConnection(connectionString);
+});*/
 
 if (builder.Environment.IsDevelopment())
 {
@@ -94,6 +94,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IOTPService, OTPService>();
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
 builder.Services.AddScoped<IUsersProgressRepository, UsersProgressRepository>();
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
