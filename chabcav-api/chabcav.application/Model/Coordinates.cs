@@ -8,8 +8,8 @@ namespace chabcav.application.Model
 {
     public class Coordinates
     {
-        public string Name { get; set; }
-
-        public double[] Coords { get; set; }
+        public double Longtitude { get; set; }
+        public double Latitude { get; set; }
+        public string Country { get; set; }
     }
 }

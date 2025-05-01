@@ -12,7 +12,7 @@ namespace chabcav.application.Commands.UpdateProfileImage
     public class UploadProfileImageCommandHandler : IRequestHandler<UpdateProfileImageCommand, bool>
     {
         private readonly IProfileRepository _profileRepository;
-
+  
         public UploadProfileImageCommandHandler(IProfileRepository profileRepository)
         {
             _profileRepository = profileRepository;
@@ -29,9 +29,12 @@ namespace chabcav.application.Commands.UpdateProfileImage
 
             try
             {
-                var path = Path.Combine("wwwroot/uploads", request.Image.FileName);
-                using var stream = new FileStream(path, FileMode.Create);
-                await request.Image.CopyToAsync(stream);
+
+               var FirebaseStorage = new FirebaseStorageService();
+                await FirebaseStorage.UploadProfileImage(request.Image);
+               /* var path = Path.Combine("wwwroot/uploads", request.Image.FileName);
+               using var stream = new FileStream(path, FileMode.Create);
+                await request.Image.CopyToAsync(stream);*/
 
 
                 var isUpdated = await _profileRepository.UpdateProfileImage(request.UserId, request.Image.FileName);

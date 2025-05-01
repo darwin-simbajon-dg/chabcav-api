@@ -20,7 +20,9 @@ namespace chabcav.domain.Interfaces
         Task<List<User>> GetAllAsync();
         Task AddProfile(User user);
 
-        
+        //For Admin Users management
+        Task<bool> UpdateUserAsync(User user);
+        Task<bool> DeleteUserAsync(Guid id);
     }
 
 }

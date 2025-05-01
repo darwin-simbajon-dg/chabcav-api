@@ -5,8 +5,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation.Host;
 using System.Text;
 using System.Threading.Tasks;
+using Coordinates = chabcav.application.Model.Coordinates;
 
 namespace chabcav.application.Queries.GetDashboard
 {
@@ -28,9 +30,14 @@ namespace chabcav.application.Queries.GetDashboard
 
         public async Task<DashboardData> Handle(GetDashboardQuery request, CancellationToken cancellationToken)
         {
-            _coordinates = GetCoordinates();
-            _countryFlags = GetCountryFlags();
+            // Fetch country flags and coordinates first
+            //var coordinatesTask = GetCoordinatesAsync();
+           // var countryFlagsTask = GetCountryFlagsAsync();
 
+          _coordinates = await GetCoordinatesAsync();
+            _countryFlags = await GetCountryFlagsAsync();
+
+            // Now run the dependent tasks
             var countryDataTask = GetCountryData();
             var weeklyVisitDataTask = GetWeeklyVisit();
             var monthlyVisitDataTask = GetMonthlyVisit();
@@ -38,7 +45,8 @@ namespace chabcav.application.Queries.GetDashboard
             var noOfVisitsTask = GetTotalVisits();
             var totalUsersTask = GetTotalUsers();
 
-            await Task.WhenAll(countryDataTask, weeklyVisitDataTask, monthlyVisitDataTask, monthlyCompletedUsersTask, noOfVisitsTask, totalUsersTask);
+            await Task.WhenAll(countryDataTask, weeklyVisitDataTask, monthlyVisitDataTask,
+                               monthlyCompletedUsersTask, noOfVisitsTask, totalUsersTask);
 
             var countryData = await countryDataTask;
             var weeklyVisitData = await weeklyVisitDataTask;
@@ -58,6 +66,10 @@ namespace chabcav.application.Queries.GetDashboard
                 MapCoordinates = GetMapCoordinates(countryData, _coordinates)
             };
         }
+
+
+        
+
 
         private async Task<List<CountryData>> GetCountryData()
         {
@@ -178,21 +190,91 @@ namespace chabcav.application.Queries.GetDashboard
             return weekData;
         }
 
-        private string GetCountryFlag(string v)
+        /* private string GetCountryFlag(string v)
+         {
+             return $"https://www.worldometers.info/{_countryFlags.FirstOrDefault(x => x.Name == v)?.Flag}";
+         }*/
+
+        private string GetCountryFlag(string country)
         {
-            return $"https://www.worldometers.info/{_countryFlags.FirstOrDefault(x => x.Name == v)?.Flag}";
+            // Try to find the country in the flags list
+            var countryFlag = _countryFlags.FirstOrDefault(x => x.Name == country);
+
+            // If no match is found, default to the Philippine flag (PH)
+            if (countryFlag == null)
+            {
+                // Log the issue for debugging or return the Philippine flag URL
+                Console.WriteLine($"Flag not found for country: {country}. Defaulting to PH.");
+                return "https://www.worldometers.info/img/flags/small/tn_ph-flag.gif";  // Philippine flag as fallback
+            }
+
+            // Return the flag URL if found
+            return $"https://www.worldometers.info/{countryFlag.Flag}";
         }
 
-        private List<CountryFlag> GetCountryFlags()
+
+        /*private string GetCountryFlag(string countryName)
         {
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot\\data", "countryflags.json");
-            var json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<List<CountryFlag>>(json);
+            var flagPath = _countryFlags.FirstOrDefault(x => x.Name == countryName)?.Flag;
+
+            return flagPath != null
+                ? $"https://firebasestorage.googleapis.com/v0/b/chabcav-d81fa.firebasestorage.app/o/public%2F{Uri.EscapeDataString(flagPath)}?alt=media"
+                : null;
+        }*/
+
+        /*private string GetCountryFlag(string countryName)
+        {
+            if (_countryFlags == null || string.IsNullOrWhiteSpace(countryName))
+                return null;
+
+            var flagPath = _countryFlags
+                .FirstOrDefault(x => string.Equals(x.Name?.Trim(), countryName?.Trim(), StringComparison.OrdinalIgnoreCase))
+                ?.Flag;
+
+            if (string.IsNullOrWhiteSpace(flagPath))
+                return null;
+
+            // Remove leading slash if present
+            flagPath = flagPath.Trim().TrimStart('/');
+
+            // Prepend "public/" if that's your Firebase Storage folder
+            var fullPath = $"public/{flagPath}";
+
+            // Encode the full path
+            var encodedPath = Uri.EscapeDataString(fullPath);
+
+            // Return final Firebase Storage URL
+            return $"https://firebasestorage.googleapis.com/v0/b/chabcav-d81fa.firebasestorage.app/o/{encodedPath}?alt=media";
+        }*/
+
+
+
+
+
+
+
+        /*private List<CountryFlag> GetCountryFlags()
+         {
+             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot\\data", "countryflags.json"); //file base
+             var json = File.ReadAllText(filePath);
+             return JsonConvert.DeserializeObject<List<CountryFlag>>(json);
+         }*/
+
+        private async Task<List<CountryFlag>> GetCountryFlagsAsync()
+        {
+            var url = "https://firebasestorage.googleapis.com/v0/b/chabcav-d81fa.firebasestorage.app/o/public%2Fcountryflags.json?alt=media";
+
+            using (HttpClient client = new HttpClient())
+            {
+                var json = await client.GetStringAsync(url);
+                return JsonConvert.DeserializeObject<List<CountryFlag>>(json);
+            }
         }
 
-        private List<Coordinates> GetCoordinates()
+
+        /*private List<Coordinates> GetCoordinates()
         {
-            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot\\data", "countries.csv");
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot\\data", "countries.csv"); //firebase
             var lines = File.ReadAllLines(filePath);
             var coordinatesList = new List<Coordinates>();
 
@@ -208,11 +290,96 @@ namespace chabcav.application.Queries.GetDashboard
             }
 
             return coordinatesList;
+        }*/
+
+
+        /*private async Task<List<Coordinates>> GetCoordinatesAsync()
+        {
+            var url = "https://firebasestorage.googleapis.com/v0/b/chabcav-d81fa.firebasestorage.app/o/public%2Fcountries.json?alt=media";
+            var coordinatesList = new List<Coordinates>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                // Fetch the JSON content
+                var jsonContent = await client.GetStringAsync(url);
+
+                // Deserialize the JSON into a list of coordinates
+                var coordinates = JsonConvert.DeserializeObject<List<Coordinates>>(jsonContent);
+
+                if (coordinates != null)
+                {
+                    coordinatesList = coordinates;
+                }
+            }
+
+            return coordinatesList;
+        }*/
+
+        private async Task<List<Coordinates>> GetCoordinatesAsync()
+        {
+            var url = "https://firebasestorage.googleapis.com/v0/b/chabcav-d81fa.firebasestorage.app/o/public%2Fcountries.json?alt=media";
+            var coordinatesList = new List<Coordinates>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                // Fetch the JSON content
+                var jsonContent = await client.GetStringAsync(url);
+
+                // Deserialize the JSON into a list of coordinates
+                var coordinates = JsonConvert.DeserializeObject<List<Coordinates>>(jsonContent);
+
+                if (coordinates != null)
+                {
+                    coordinatesList = coordinates;
+                }
+            }
+
+            return coordinatesList;
         }
+
+
+
 
         private List<Coordinates> GetMapCoordinates(List<CountryData> countryData, List<Coordinates>? coordinates)
         {
-           return coordinates.Where(x => countryData.Any(y => y.Country == x.Name)).ToList();
+            return coordinates.Where(x => countryData.Any(y => y.Country == x.Country)).ToList();
         }
+
+
+        // Updated to handle null and improve matching
+        /* private async Task<List<Coordinates>> GetCoordinatesAsync()
+         {
+             var url = "https://firebasestorage.googleapis.com/v0/b/chabcav-d81fa.firebasestorage.app/o/public%2Fcountries.json?alt=media";
+             var coordinatesList = new List<Coordinates>();
+
+             using (HttpClient client = new HttpClient())
+             {
+                 try
+                 {
+                     // Fetch the JSON content
+                     var jsonContent = await client.GetStringAsync(url);
+
+                     // Deserialize the JSON into a list of coordinates
+                     var coordinates = JsonConvert.DeserializeObject<List<Coordinates>>(jsonContent);
+
+                     if (coordinates != null)
+                     {
+                         coordinatesList = coordinates;
+                     }
+                 }
+                 catch (Exception ex)
+                 {
+                     // Log error for troubleshooting
+                     Console.WriteLine($"Error fetching coordinates: {ex.Message}");
+                 }
+             }
+
+             return coordinatesList;
+         }
+        */
+
+
+
+
     }
 }

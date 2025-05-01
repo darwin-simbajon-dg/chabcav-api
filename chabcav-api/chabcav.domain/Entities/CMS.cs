@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace chabcav.domain.Entities
 {
     [Table("cms")]
-    /* public class CMS
+     public class CMS
      {
          [Key]
          public int id { get; set; }
@@ -30,23 +30,8 @@ namespace chabcav.domain.Entities
 
 
 
-     }*/
+     }
 
-    [FirestoreData]
-    public class CMS
-    {
-        [FirestoreProperty] public string banner { get; set; }
-        [FirestoreProperty] public string midcontentimage { get; set; }
-        [FirestoreProperty] public string headline { get; set; }
-        [FirestoreProperty] public string content { get; set; }
-        [FirestoreProperty] public string card1 { get; set; }
-        [FirestoreProperty] public string card2 { get; set; }
-        [FirestoreProperty] public string card3 { get; set; }
-        [FirestoreProperty] public string card4 { get; set; }
-        [FirestoreProperty] public string card5 { get; set; }
-        [FirestoreProperty] public string card6 { get; set; }
-        [FirestoreProperty] public string card7 { get; set; }
-        [FirestoreProperty] public string card8 { get; set; }
-    }
+    
 
 }

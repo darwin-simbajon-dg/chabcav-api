@@ -42,7 +42,7 @@ namespace chabcav.infrastructure.Data.Repositories
             _auditRepository = auditRepository;
         }
 
-        public async Task<RegistrationResult> AddAsync(User user)
+        /*public async Task<RegistrationResult> AddAsync(User user)
         {
             try
             {
@@ -93,10 +93,10 @@ namespace chabcav.infrastructure.Data.Repositories
 
                 throw ex;
             }
-        }
+        }*/
 
 
-        /* public async Task<RegistrationResult> AddAsync(User user)
+         public async Task<RegistrationResult> AddAsync(User user)
          {
              try
              {
@@ -134,7 +134,7 @@ namespace chabcav.infrastructure.Data.Repositories
                  throw ex;
              }
 
-         }*/
+         }
 
         public async Task AddProfile(User user)
         {
@@ -315,7 +315,65 @@ namespace chabcav.infrastructure.Data.Repositories
                 throw;
             }
         }
+
+        //For Admin Users Management
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            try
+            {
+                const string sql = @"
+            UPDATE AspNetUsers 
+            SET UserName = @Username,
+                NormalizedUserName = @Username,
+                Email = @Email,
+                NormalizedEmail = @Email
+            WHERE Id = @Id";
+
+                var rowsAffected = await _dbConnection.ExecuteAsync(sql, new
+                {
+                    user.Username,
+                    user.Email,
+                    user.Id
+                });
+
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteUserAsync(Guid userId)
+        {
+            using var transaction = _dbConnection.BeginTransaction();
+
+            try
+            {
+                // Delete from roles first (assuming FK constraint)
+                await _dbConnection.ExecuteAsync("DELETE FROM AspNetUserRoles WHERE UserId = @Id", new { Id = userId }, transaction);
+
+                // Delete from profiles
+                await _dbConnection.ExecuteAsync("DELETE FROM Profiles WHERE Id = @Id", new { Id = userId }, transaction);
+
+                // Finally, delete from AspNetUsers
+                await _dbConnection.ExecuteAsync("DELETE FROM AspNetUsers WHERE Id = @Id", new { Id = userId }, transaction);
+
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+
+
+
+
     }
 
-  
+
 }

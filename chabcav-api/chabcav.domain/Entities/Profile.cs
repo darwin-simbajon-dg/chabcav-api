@@ -10,6 +10,7 @@ namespace chabcav.domain.Entities
     [Table("profiles")]
     public class Profile
     {
+        [Key]
         public Guid id { get; set; }
         public string information { get; set; }
         public string fullname { get; set; }
