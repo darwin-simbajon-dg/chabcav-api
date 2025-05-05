@@ -26,7 +26,7 @@ namespace chabcav.application.Commands.ForgotPassword
                 "  <title>Reset Password</title>\r\n</head>\r\n<body>\r\n" +
                 "    <h1>Reset Your Password</h1>\r\n  " +
                 "  <p>Click the link below to reset your password:</p>\r\n " +
-                "   <a href=\"http://localhost:5173/reset-password?email={emailaddress}\">Reset Password</a>\r\n</body>\r\n</html>";
+                "   <a href=\"https://chabcav-web-development.up.railway.app/reset-password?email={emailaddress}\">Reset Password</a>\r\n</body>\r\n</html>";
 
             body = body.Replace("{emailaddress}", request.Email);
 
