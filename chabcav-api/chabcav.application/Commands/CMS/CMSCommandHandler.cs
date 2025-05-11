@@ -44,7 +44,13 @@ namespace chabcav.application.Commands.CMS
                     card5 = request.Data.card5,
                     card6 = request.Data.card6,
                     card7 = request.Data.card7,
-                    card8 = request.Data.card8
+                    card8 = request.Data.card8,
+
+                    //newly added fields
+                    aboutus = request.Data.aboutus,
+                    bannercontent = request.Data.bannercontent,
+                    bannersecondcontent = request.Data.bannersecondcontent,
+                    characterreference = request.Data.characterreference
                 };
                 
               var result = _cmsRepository.UpdateCMSImages(cms);

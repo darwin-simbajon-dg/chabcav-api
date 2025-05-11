@@ -106,7 +106,14 @@ namespace chabcav.infrastructure.Data.Repositories
                         cms.card5,
                         cms.card6,
                         cms.card7,
-                        cms.card8
+                        cms.card8,
+
+                        //newly added fields
+                        cms.aboutus,
+                        cms.bannercontent,
+                        cms.bannersecondcontent,
+                        cms.characterreference
+
                     });
 
                     return insertResult > 0;
@@ -174,11 +181,28 @@ namespace chabcav.infrastructure.Data.Repositories
         }
 
 
-        public async Task<bool> UpdateContent(string content, string headline)
+        /* public async Task<bool> UpdateContent(string content, string headline)
+         {
+             try
+             {
+                 var result = await _dbConnection.ExecuteAsync("UPDATE cms SET content = @Content, headline = @Headline", new { Content = content, Headline = headline });
+
+                 return result > 0;
+             }
+             catch (Exception)
+             {
+
+                 return false;
+             }
+         }*/
+
+        public async Task<bool> UpdateContent(string content, string headline, string aboutus, string bannercontent, 
+            string bannersecondcontent, string characterreference)
         {
             try
             {
-                var result = await _dbConnection.ExecuteAsync("UPDATE cms SET content = @Content, headline = @Headline", new { Content = content, Headline = headline });
+                var result = await _dbConnection.ExecuteAsync("UPDATE cms SET content = @Content, headline = @Headline,aboutus = @Aboutus, bannercontent = @Bannercontent, bannersecondcontent = @Bannersecondcontent, characterreference = @Characterreference", new { Content = content, Headline = headline, Aboutus = aboutus, Bannercontent = bannercontent,
+                Bannersecondcontent = bannersecondcontent, Characterreference = characterreference});
 
                 return result > 0;
             }
@@ -188,5 +212,6 @@ namespace chabcav.infrastructure.Data.Repositories
                 return false;
             }
         }
+
     }
 }

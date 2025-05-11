@@ -21,7 +21,8 @@ namespace chabcav.application.Commands.UpdateCMSContent
         {
             try
             {
-                var result = await _cmsRepository.UpdateContent(request.Content, request.Headline);
+                var result = await _cmsRepository.UpdateContent(request.Content, request.Headline, request.Aboutus, request.BannerContent,
+                    request.BannerSecondContent, request.CharacterReference);
 
                 return true;
             }

@@ -16,6 +16,6 @@ namespace chabcav.domain.Interfaces
         Task<bool> UpdateCMSImages(CMS cms);
 
         Task<CMS> GetCMS();
-        Task<bool> UpdateContent(string content, string headline);
+        Task<bool> UpdateContent(string content, string headline, string aboutus, string bannercontent, string bannersecondcontent, string characterreference);
     }
 }

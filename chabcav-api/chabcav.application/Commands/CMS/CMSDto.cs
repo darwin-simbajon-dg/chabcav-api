@@ -21,5 +21,11 @@ namespace chabcav.application.Commands.CMS
         public string card7 { get; set; }
         public string card8 { get; set; }
 
+        // New fields
+        public string aboutus { get; set; }
+        public string bannercontent { get; set; }
+        public string bannersecondcontent { get; set; }
+        public string characterreference { get; set; }
+
     }
 }

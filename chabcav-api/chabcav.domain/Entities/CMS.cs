@@ -27,10 +27,14 @@ namespace chabcav.domain.Entities
          public string card8 { get; set; }
 
 
+        // Newly added fields
+        public string aboutus { get; set; }
+        public string bannercontent { get; set; }
+        public string bannersecondcontent { get; set; }
+        public string characterreference { get; set; }
 
 
-
-     }
+    }
 
     
 
